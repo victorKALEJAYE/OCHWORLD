@@ -17,7 +17,7 @@ import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
-import { FullScreenLoader } from "@/components/brand/loader";
+import { IslandLoader } from "@/components/brand/island-loader";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signUpSchema, type SignUpValues } from "@/lib/validations/auth";
@@ -82,7 +82,7 @@ export function SignUpForm() {
 
   return (
     <Card>
-      {isSubmitting && <FullScreenLoader label="Creating your account" />}
+      <IslandLoader active={isSubmitting} label="Creating your account" />
       <CardHeader className="text-center">
         <span className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-200">
           <Sparkles className="size-3.5" /> New account

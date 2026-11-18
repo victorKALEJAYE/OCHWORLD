@@ -85,7 +85,7 @@ const config: Config = {
         shine: "shine 3.2s ease-in-out infinite",
         progress: "progress 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite",
         "pulse-soft": "pulse-soft 3s ease-in-out infinite",
-        "splash-out": "splash-out 0.6s ease 7s forwards",
+        "splash-out": "splash-out 0.6s ease 9s forwards",
         "letter-in": "letter-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both",
         "fade-up": "fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both",
       },

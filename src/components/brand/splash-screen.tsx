@@ -3,10 +3,11 @@
 import * as React from "react";
 import Image from "next/image";
 import { AnimatedWordmark, LoaderBar } from "@/components/brand/loader";
+import { IslandLoader } from "@/components/brand/island-loader";
 import { cn } from "@/lib/utils";
 
-/** Long enough for the letters to finish settling, on fast and slow phones alike. */
-const MIN_VISIBLE_MS = 2800;
+/** Long enough for the letters to settle and the brand to sit on screen for 5 seconds. */
+const MIN_VISIBLE_MS = 5000;
 const FADE_MS = 700;
 const SEEN_KEY = "och_splash_seen";
 
@@ -17,6 +18,7 @@ const SEEN_KEY = "och_splash_seen";
  */
 export function SplashScreen() {
   const [phase, setPhase] = React.useState<"show" | "hide" | "gone">("show");
+  const [island, setIsland] = React.useState(false);
 
   React.useEffect(() => {
     let seen = false;
@@ -33,8 +35,12 @@ export function SplashScreen() {
 
     const start = performance.now();
     const timers: ReturnType<typeof setTimeout>[] = [];
+    // Dynamic Island springs open just after the splash appears…
+    timers.push(setTimeout(() => setIsland(true), 250));
     const finish = () => {
       const wait = Math.max(0, MIN_VISIBLE_MS - (performance.now() - start));
+      // …and tucks itself away just before the splash fades.
+      timers.push(setTimeout(() => setIsland(false), Math.max(0, wait - 900)));
       timers.push(
         setTimeout(() => {
           setPhase("hide");
@@ -64,6 +70,8 @@ export function SplashScreen() {
       style={{ transitionDuration: `${FADE_MS}ms` }}
     >
       <div className="absolute left-1/2 top-1/2 size-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-500/10 blur-[120px]" />
+
+      <IslandLoader active={island && phase === "show"} label="Getting things ready" showWordmark={false} dim={false} />
 
       <div className="relative flex flex-col items-center gap-6 px-6">
         <Image

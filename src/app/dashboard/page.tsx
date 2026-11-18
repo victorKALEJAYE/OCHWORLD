@@ -32,7 +32,7 @@ export default async function DashboardPage() {
     <div className="relative min-h-dvh">
       <AuthBackground />
 
-      <header className="glass-soft sticky top-0 z-10 border-x-0 border-t-0">
+      <header className="glass-soft sticky top-0 z-10 border-x-0 border-t-0 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-8">
           <Logo href="/dashboard" />
           <form action="/auth/sign-out" method="post">

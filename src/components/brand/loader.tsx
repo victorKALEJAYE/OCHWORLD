@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { createPortal } from "react-dom";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -108,31 +107,5 @@ export function LoaderBar({ className }: { className?: string }) {
     <div className={cn("h-[3px] w-40 overflow-hidden rounded-full bg-white/10", className)}>
       <div className="h-full w-2/5 animate-progress rounded-full bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
     </div>
-  );
-}
-
-/**
- * Overlay over the whole screen while something is happening
- * (signing in, creating an account, redirecting to Google/Apple).
- * Rendered in a portal so glass parents (backdrop-filter) can't clip it.
- */
-export function FullScreenLoader({ label }: { label?: string }) {
-  const [mounted, setMounted] = React.useState(false);
-  React.useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-[90] grid place-items-center bg-background/80 backdrop-blur-xl animate-in fade-in duration-500">
-      <div className="relative flex flex-col items-center gap-7 px-6">
-        <AnimatedWordmark className="text-2xl sm:text-3xl" stagger={90} />
-        <LoaderBar />
-        {label && (
-          <p className="text-sm text-gold-100/70 animate-fade-up" style={{ animationDelay: "900ms" }}>
-            {label}…
-          </p>
-        )}
-      </div>
-    </div>,
-    document.body
   );
 }

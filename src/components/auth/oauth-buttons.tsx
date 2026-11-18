@@ -4,7 +4,7 @@ import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppleIcon, GoogleIcon } from "@/components/icons";
-import { FullScreenLoader } from "@/components/brand/loader";
+import { IslandLoader } from "@/components/brand/island-loader";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 
@@ -42,7 +42,7 @@ export function OAuthButtons({ next = "/dashboard", disabled, onError }: OAuthBu
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {pending && <FullScreenLoader label={`Connecting to ${pending === "google" ? "Google" : "Apple"}`} />}
+      <IslandLoader active={pending !== null} label={`Connecting to ${pending === "apple" ? "Apple" : "Google"}`} />
       {providers.map(({ id, label, Icon }) => (
         <Button
           key={id}

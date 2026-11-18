@@ -14,7 +14,7 @@ import { FormAlert, type AlertState } from "@/components/auth/form-alert";
 import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
-import { FullScreenLoader } from "@/components/brand/loader";
+import { IslandLoader } from "@/components/brand/island-loader";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signInSchema, type SignInValues } from "@/lib/validations/auth";
@@ -47,7 +47,7 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
 
   return (
     <Card>
-      {isSubmitting && <FullScreenLoader label="Signing you in" />}
+      <IslandLoader active={isSubmitting} label="Signing you in" />
       <CardHeader className="text-center">
         <CardTitle>
           Welcome <span className="text-gold-gradient">back</span>
