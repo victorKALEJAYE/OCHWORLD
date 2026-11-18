@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Loader2, MailCheck } from "lucide-react";
+import { ArrowRight, Loader2, MailCheck, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
+import { FullScreenLoader } from "@/components/brand/loader";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signUpSchema, type SignUpValues } from "@/lib/validations/auth";
@@ -81,8 +82,14 @@ export function SignUpForm() {
 
   return (
     <Card>
+      {isSubmitting && <FullScreenLoader label="Creating your account" />}
       <CardHeader className="text-center">
-        <CardTitle>Create your account</CardTitle>
+        <span className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gradient-to-r from-gold-500/15 to-ember-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-200">
+          <Sparkles className="size-3.5" /> New account
+        </span>
+        <CardTitle>
+          Create your <span className="text-gold-gradient">account</span>
+        </CardTitle>
         <CardDescription>Join OCHWORLD and find your place in Abuja.</CardDescription>
       </CardHeader>
 

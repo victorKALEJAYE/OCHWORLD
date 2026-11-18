@@ -10,7 +10,7 @@ const buttonVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
         gold:
-          "bg-gradient-to-br from-gold-300 via-gold-500 to-gold-700 text-ink shadow-[0_12px_32px_-12px_rgba(215,163,40,0.7)] hover:brightness-110",
+          "relative overflow-hidden bg-gradient-to-r from-gold-300 via-gold-500 to-ember-500 bg-[length:200%_auto] text-ink shadow-[0_14px_40px_-12px_rgba(232,137,43,0.75)] animate-gradient-x hover:brightness-110 hover:shadow-[0_18px_48px_-12px_rgba(232,137,43,0.9)] before:absolute before:inset-y-0 before:left-0 before:w-1/3 before:bg-gradient-to-r before:from-transparent before:via-white/45 before:to-transparent before:animate-shine",
         glass:
           "border border-white/10 bg-white/[0.06] text-foreground backdrop-blur-xl hover:border-white/20 hover:bg-white/[0.1]",
         outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",

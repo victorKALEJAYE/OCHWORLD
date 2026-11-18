@@ -14,6 +14,7 @@ import { FormAlert, type AlertState } from "@/components/auth/form-alert";
 import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
+import { FullScreenLoader } from "@/components/brand/loader";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signInSchema, type SignInValues } from "@/lib/validations/auth";
@@ -46,8 +47,11 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
 
   return (
     <Card>
+      {isSubmitting && <FullScreenLoader label="Signing you in" />}
       <CardHeader className="text-center">
-        <CardTitle>Welcome back</CardTitle>
+        <CardTitle>
+          Welcome <span className="text-gold-gradient">back</span>
+        </CardTitle>
         <CardDescription>Sign in to save homes, book viewings and talk to agents.</CardDescription>
       </CardHeader>
 

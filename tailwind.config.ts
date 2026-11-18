@@ -36,6 +36,7 @@ const config: Config = {
           800: "#7A5A0E",
         },
         ink: "#14110A",
+        ember: { 400: "#F59E4B", 500: "#E8892B", 600: "#C96A12" },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -47,10 +48,35 @@ const config: Config = {
           "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
           "50%": { transform: "translate3d(0, -24px, 0) scale(1.05)" },
         },
+        "gradient-x": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        shine: {
+          "0%": { transform: "translateX(-120%) skewX(-20deg)" },
+          "100%": { transform: "translateX(220%) skewX(-20deg)" },
+        },
+        progress: {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(250%)" },
+        },
+        "pulse-soft": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.75", transform: "scale(0.94)" },
+        },
+        "splash-out": {
+          to: { opacity: "0", visibility: "hidden" },
+        },
       },
       animation: {
         "float-slow": "float-slow 14s ease-in-out infinite",
         "float-slower": "float-slow 20s ease-in-out infinite reverse",
+        "spin-slower": "spin 60s linear infinite",
+        "gradient-x": "gradient-x 6s ease infinite",
+        shine: "shine 3.2s ease-in-out infinite",
+        progress: "progress 1.4s ease-in-out infinite",
+        "pulse-soft": "pulse-soft 1.8s ease-in-out infinite",
+        "splash-out": "splash-out 0.4s ease 4s forwards",
       },
     },
   },

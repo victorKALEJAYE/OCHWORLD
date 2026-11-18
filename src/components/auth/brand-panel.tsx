@@ -24,7 +24,7 @@ export function BrandPanel() {
         <ul className="space-y-3">
           {highlights.map(({ icon: Icon, title, text }) => (
             <li key={title} className="glass-soft flex gap-4 rounded-2xl p-4">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gold-500/15 text-gold-300 ring-1 ring-gold-500/30">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-gold-300 to-ember-500 text-ink shadow-[0_8px_24px_-8px_rgba(232,137,43,0.7)]">
                 <Icon className="size-5" />
               </span>
               <div>
