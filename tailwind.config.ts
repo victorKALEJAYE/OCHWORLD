@@ -67,6 +67,15 @@ const config: Config = {
         "splash-out": {
           to: { opacity: "0", visibility: "hidden" },
         },
+        "letter-in": {
+          "0%": { opacity: "0", transform: "translate3d(var(--from-x), 10px, 0) scale(0.9)", filter: "blur(10px)" },
+          "60%": { filter: "blur(0)" },
+          "100%": { opacity: "1", transform: "translate3d(0, 0, 0) scale(1)", filter: "blur(0)" },
+        },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "float-slow": "float-slow 14s ease-in-out infinite",
@@ -74,9 +83,11 @@ const config: Config = {
         "spin-slower": "spin 60s linear infinite",
         "gradient-x": "gradient-x 6s ease infinite",
         shine: "shine 3.2s ease-in-out infinite",
-        progress: "progress 1.4s ease-in-out infinite",
-        "pulse-soft": "pulse-soft 1.8s ease-in-out infinite",
-        "splash-out": "splash-out 0.4s ease 4s forwards",
+        progress: "progress 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite",
+        "pulse-soft": "pulse-soft 3s ease-in-out infinite",
+        "splash-out": "splash-out 0.6s ease 7s forwards",
+        "letter-in": "letter-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "fade-up": "fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

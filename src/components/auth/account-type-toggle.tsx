@@ -27,14 +27,14 @@ export function AccountTypeToggle({ value, onChange }: { value: AccountType; onC
               "flex items-center gap-3 rounded-xl border p-3 text-left backdrop-blur-md transition-all",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/40",
               active
-                ? "border-gold-400/70 bg-gradient-to-br from-gold-500/25 via-gold-500/10 to-ember-500/15 shadow-[0_0_0_1px_rgba(215,163,40,0.3),0_10px_30px_-12px_rgba(232,137,43,0.6)]"
+                ? "border-gold-500/50 bg-gold-500/10 shadow-[0_0_0_1px_rgba(215,163,40,0.2)]"
                 : "border-white/10 bg-white/[0.03] hover:border-white/20"
             )}
           >
             <span
               className={cn(
                 "grid size-9 shrink-0 place-items-center rounded-lg",
-                active ? "bg-gradient-to-br from-gold-300 to-ember-500 text-ink" : "bg-white/5 text-muted-foreground"
+                active ? "bg-gradient-to-b from-gold-300 to-gold-500 text-ink" : "bg-white/5 text-muted-foreground"
               )}
             >
               <Icon className="size-4" />

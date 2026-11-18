@@ -84,7 +84,7 @@ export function SignUpForm() {
     <Card>
       {isSubmitting && <FullScreenLoader label="Creating your account" />}
       <CardHeader className="text-center">
-        <span className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gradient-to-r from-gold-500/15 to-ember-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-200">
+        <span className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-200">
           <Sparkles className="size-3.5" /> New account
         </span>
         <CardTitle>

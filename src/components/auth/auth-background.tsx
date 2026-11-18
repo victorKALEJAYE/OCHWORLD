@@ -7,10 +7,10 @@ export function AuthBackground() {
         className="absolute inset-0"
         style={{
           backgroundImage: [
-            "radial-gradient(ellipse 70% 55% at 0% 0%, rgba(232,188,79,0.38), transparent 60%)",
-            "radial-gradient(ellipse 60% 50% at 100% 0%, rgba(246,210,122,0.16), transparent 60%)",
-            "radial-gradient(ellipse 70% 60% at 100% 100%, rgba(232,137,43,0.34), transparent 60%)",
-            "radial-gradient(ellipse 60% 55% at 0% 100%, rgba(169,121,15,0.32), transparent 60%)",
+            "radial-gradient(ellipse 70% 55% at 0% 0%, rgba(232,188,79,0.20), transparent 60%)",
+            "radial-gradient(ellipse 60% 50% at 100% 0%, rgba(246,210,122,0.07), transparent 60%)",
+            "radial-gradient(ellipse 70% 60% at 100% 100%, rgba(215,163,40,0.14), transparent 60%)",
+            "radial-gradient(ellipse 60% 55% at 0% 100%, rgba(169,121,15,0.16), transparent 60%)",
             "linear-gradient(160deg, #15110a 0%, #0b0a08 45%, #120c06 100%)",
           ].join(", "),
         }}
@@ -19,7 +19,7 @@ export function AuthBackground() {
       {/* slowly rotating light sweep */}
       <div className="absolute left-1/2 top-1/2 size-[140vmax] -translate-x-1/2 -translate-y-1/2">
         <div
-          className="size-full animate-spin-slower opacity-70 blur-3xl"
+          className="size-full animate-spin-slower opacity-30 blur-3xl"
           style={{
             background:
               "conic-gradient(from 0deg, transparent 0deg, rgba(246,210,122,0.14) 50deg, transparent 110deg, rgba(232,137,43,0.12) 200deg, transparent 260deg, rgba(215,163,40,0.12) 320deg, transparent 360deg)",
@@ -28,10 +28,10 @@ export function AuthBackground() {
       </div>
 
       {/* floating orbs */}
-      <div className="absolute -left-40 -top-40 size-[36rem] rounded-full bg-gold-400/40 blur-[120px] animate-float-slow" />
-      <div className="absolute -bottom-48 -right-32 size-[40rem] rounded-full bg-ember-500/35 blur-[140px] animate-float-slower" />
-      <div className="absolute right-[15%] top-[10%] size-[18rem] rounded-full bg-gold-200/20 blur-[90px] animate-float-slower" />
-      <div className="absolute bottom-[20%] left-[30%] size-[16rem] rounded-full bg-gold-600/25 blur-[90px] animate-float-slow" />
+      <div className="absolute -left-40 -top-40 size-[36rem] rounded-full bg-gold-500/20 blur-[130px] animate-float-slow" />
+      <div className="absolute -bottom-48 -right-32 size-[40rem] rounded-full bg-gold-700/20 blur-[150px] animate-float-slower" />
+      <div className="absolute right-[15%] top-[10%] size-[18rem] rounded-full bg-gold-200/[0.07] blur-[100px] animate-float-slower" />
+      <div className="absolute bottom-[20%] left-[30%] size-[16rem] rounded-full bg-gold-600/10 blur-[100px] animate-float-slow" />
 
       {/* grid */}
       <div
@@ -49,9 +49,9 @@ export function AuthBackground() {
       <svg className="absolute bottom-0 left-0 h-44 w-full" viewBox="0 0 1440 160" preserveAspectRatio="none">
         <defs>
           <linearGradient id="och-skyline" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#F6D27A" stopOpacity="0.22" />
-            <stop offset="60%" stopColor="#D7A328" stopOpacity="0.14" />
-            <stop offset="100%" stopColor="#E8892B" stopOpacity="0.2" />
+            <stop offset="0%" stopColor="#F6D27A" stopOpacity="0.12" />
+            <stop offset="60%" stopColor="#D7A328" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#A9790F" stopOpacity="0.1" />
           </linearGradient>
         </defs>
         <path
@@ -61,7 +61,7 @@ export function AuthBackground() {
       </svg>
 
       {/* light vignette so the card stays readable */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(11,10,8,.45)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(11,10,8,.6)_100%)]" />
     </div>
   );
 }

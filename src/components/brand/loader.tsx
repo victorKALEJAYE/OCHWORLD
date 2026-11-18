@@ -5,7 +5,47 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const sizes = { sm: 48, md: 72, lg: 104 } as const;
+const LETTERS = "OCHWORLD".split("");
+
+/**
+ * The OCHWORLD letters drift in from spread-out positions, unblur and settle
+ * together into the wordmark, one after another.
+ */
+export function AnimatedWordmark({
+  className,
+  delay = 0,
+  stagger = 110,
+}: {
+  className?: string;
+  delay?: number;
+  stagger?: number;
+}) {
+  const mid = (LETTERS.length - 1) / 2;
+  return (
+    <p
+      aria-label="OCHWORLD"
+      className={cn("flex font-display text-3xl font-extrabold tracking-[0.22em] sm:text-4xl", className)}
+    >
+      {LETTERS.map((ch, i) => (
+        <span
+          key={i}
+          aria-hidden="true"
+          className="inline-block animate-letter-in bg-gradient-to-b from-gold-100 via-gold-300 to-gold-600 bg-clip-text text-transparent"
+          style={
+            {
+              "--from-x": `${(i - mid) * 22}px`,
+              animationDelay: `${delay + i * stagger}ms`,
+            } as React.CSSProperties
+          }
+        >
+          {ch}
+        </span>
+      ))}
+    </p>
+  );
+}
+
+const sizes = { sm: 48, md: 72, lg: 96 } as const;
 
 type BrandLoaderProps = {
   label?: string;
@@ -13,28 +53,25 @@ type BrandLoaderProps = {
   className?: string;
 };
 
-/** OCHWORLD mark inside a spinning gold-to-ember ring. */
+/** OCHWORLD mark inside a slowly turning gold ring. */
 export function BrandLoader({ label = "Loading", size = "md", className }: BrandLoaderProps) {
   const px = sizes[size];
-  const ring = size === "sm" ? 3 : 4;
+  const ring = size === "sm" ? 2 : 3;
+  const mask = `radial-gradient(farthest-side, transparent calc(100% - ${ring}px), #000 calc(100% - ${ring}px))`;
 
   return (
     <div role="status" aria-live="polite" className={cn("flex flex-col items-center gap-5", className)}>
       <div className="relative" style={{ width: px, height: px }}>
-        {/* soft glow */}
-        <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-gold-400/40 to-ember-500/30 blur-2xl animate-pulse-soft" />
-        {/* faint track */}
-        <div className="absolute inset-0 rounded-full border border-white/10" style={{ borderWidth: ring }} />
-        {/* spinning gradient arc */}
+        <div className="absolute -inset-3 rounded-full bg-gold-500/15 blur-2xl animate-pulse-soft" />
+        <div className="absolute inset-0 rounded-full border-white/10" style={{ borderWidth: ring, borderStyle: "solid" }} />
         <div
-          className="absolute inset-0 animate-spin rounded-full [animation-duration:1s]"
+          className="absolute inset-0 animate-spin rounded-full [animation-duration:2.4s] [animation-timing-function:cubic-bezier(0.45,0.05,0.55,0.95)]"
           style={{
-            background: "conic-gradient(from 0deg, transparent 0deg, #F6D27A 140deg, #D7A328 230deg, #E8892B 320deg, transparent 360deg)",
-            WebkitMask: `radial-gradient(farthest-side, transparent calc(100% - ${ring}px), #000 calc(100% - ${ring}px))`,
-            mask: `radial-gradient(farthest-side, transparent calc(100% - ${ring}px), #000 calc(100% - ${ring}px))`,
+            background: "conic-gradient(from 0deg, transparent 0deg, rgba(246,210,122,0.9) 160deg, #D7A328 260deg, transparent 360deg)",
+            WebkitMask: mask,
+            mask,
           }}
         />
-        {/* logo */}
         <Image
           src="/ochworld-mark.png"
           alt=""
@@ -45,35 +82,37 @@ export function BrandLoader({ label = "Loading", size = "md", className }: Brand
         />
       </div>
 
-      {label && (
-        <p className="flex items-baseline gap-1 text-sm font-medium tracking-wide text-gold-100/90">
+      {label ? (
+        <p className="flex items-baseline gap-1 text-sm font-medium tracking-wide text-gold-100/80 animate-fade-up">
           {label}
-          <span className="inline-flex gap-0.5" aria-hidden="true">
-            {[0, 150, 300].map((d) => (
+          <span className="inline-flex gap-1" aria-hidden="true">
+            {[0, 400, 800].map((d) => (
               <span
                 key={d}
-                className="size-1 animate-bounce rounded-full bg-gold-300"
+                className="size-1 rounded-full bg-gold-300 animate-pulse-soft"
                 style={{ animationDelay: `${d}ms` }}
               />
             ))}
           </span>
         </p>
+      ) : (
+        <span className="sr-only">Loading</span>
       )}
     </div>
   );
 }
 
-/** Indeterminate gold progress bar. */
+/** Slow, smooth indeterminate gold progress bar. */
 export function LoaderBar({ className }: { className?: string }) {
   return (
-    <div className={cn("h-1 w-48 overflow-hidden rounded-full bg-white/10", className)}>
-      <div className="h-full w-1/2 animate-progress rounded-full bg-gradient-to-r from-gold-300 via-gold-500 to-ember-500" />
+    <div className={cn("h-[3px] w-40 overflow-hidden rounded-full bg-white/10", className)}>
+      <div className="h-full w-2/5 animate-progress rounded-full bg-gradient-to-r from-transparent via-gold-400 to-transparent" />
     </div>
   );
 }
 
 /**
- * Blurred overlay over the whole screen while something is happening
+ * Overlay over the whole screen while something is happening
  * (signing in, creating an account, redirecting to Google/Apple).
  * Rendered in a portal so glass parents (backdrop-filter) can't clip it.
  */
@@ -83,11 +122,15 @@ export function FullScreenLoader({ label }: { label?: string }) {
   if (!mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[90] grid place-items-center bg-background/70 backdrop-blur-xl animate-in fade-in duration-300">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(215,163,40,0.18),transparent_60%)]" />
-      <div className="relative flex flex-col items-center gap-6">
-        <BrandLoader label={label} size="lg" />
+    <div className="fixed inset-0 z-[90] grid place-items-center bg-background/80 backdrop-blur-xl animate-in fade-in duration-500">
+      <div className="relative flex flex-col items-center gap-7 px-6">
+        <AnimatedWordmark className="text-2xl sm:text-3xl" stagger={90} />
         <LoaderBar />
+        {label && (
+          <p className="text-sm text-gold-100/70 animate-fade-up" style={{ animationDelay: "900ms" }}>
+            {label}…
+          </p>
+        )}
       </div>
     </div>,
     document.body
