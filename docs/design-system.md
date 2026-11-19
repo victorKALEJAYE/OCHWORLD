@@ -79,7 +79,8 @@ and `success`.
 
 | Situation | What to show |
 |---|---|
-| Initial app load and page navigation | `BrandLoader`: the logo with a thin gold arc turning around it (`app/loading.tsx`). No text, no full-screen takeover beyond the page area. |
+| First visit in a browser session | `InitialLoader`: black screen with `BrandLoader`, shown for at least 0.7s and removed as soon as the page has loaded (fades over 0.4s). Not shown again in the same session; a CSS fail-safe hides it after 6s if scripts fail. |
+| Page navigation | `BrandLoader` in the page area (`app/loading.tsx`). No text. |
 | Data loading inside a page (lists, cards) | Skeletons with the same layout as the content (`PropertyGridSkeleton`). |
 | A button's action in progress | Spinner inside the button and the button disabled. No overlays. |
 | Nothing to show | `EmptyState` with a way forward. |

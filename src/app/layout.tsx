@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
+import { InitialLoader } from "@/components/brand/initial-loader";
 import { siteConfig } from "@/config/site";
+import { INITIAL_LOADER_SEEN_KEY } from "@/lib/initial-loader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const montserrat = Montserrat({
@@ -29,8 +31,20 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-NG" className={`${inter.variable} ${montserrat.variable}`}>
-      <body className="min-h-dvh font-sans">{children}</body>
+    // suppressHydrationWarning: the inline script may add data-initial-loader before React loads.
+    <html lang="en-NG" className={`${inter.variable} ${montserrat.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Runs before first paint: skip the first-visit loader if it was already shown this session. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(sessionStorage.getItem("${INITIAL_LOADER_SEEN_KEY}"))document.documentElement.dataset.initialLoader="skip"}catch(e){}`,
+          }}
+        />
+      </head>
+      <body className="min-h-dvh font-sans">
+        <InitialLoader />
+        {children}
+      </body>
     </html>
   );
 }
