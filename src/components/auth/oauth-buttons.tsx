@@ -4,7 +4,6 @@ import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppleIcon, GoogleIcon } from "@/components/icons";
-import { IslandLoader } from "@/components/brand/island-loader";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 
@@ -42,12 +41,11 @@ export function OAuthButtons({ next = "/dashboard", disabled, onError }: OAuthBu
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      <IslandLoader active={pending !== null} label={`Connecting to ${pending === "apple" ? "Apple" : "Google"}`} />
       {providers.map(({ id, label, Icon }) => (
         <Button
           key={id}
           type="button"
-          variant="glass"
+          variant="outline"
           size="lg"
           disabled={disabled || pending !== null}
           onClick={() => signInWith(id)}
@@ -62,10 +60,10 @@ export function OAuthButtons({ next = "/dashboard", disabled, onError }: OAuthBu
 
 export function OrDivider({ label = "or continue with email" }: { label?: string }) {
   return (
-    <div className="flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-white/15" />
+    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+      <span className="h-px flex-1 bg-border" />
       {label}
-      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-white/15" />
+      <span className="h-px flex-1 bg-border" />
     </div>
   );
 }

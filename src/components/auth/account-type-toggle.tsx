@@ -24,17 +24,17 @@ export function AccountTypeToggle({ value, onChange }: { value: AccountType; onC
             aria-checked={active}
             onClick={() => onChange(v)}
             className={cn(
-              "flex items-center gap-3 rounded-xl border p-3 text-left backdrop-blur-md transition-all",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/40",
+              "flex items-center gap-3 rounded-md border p-3 text-left transition-colors",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               active
-                ? "border-gold-500/50 bg-gold-500/10 shadow-[0_0_0_1px_rgba(215,163,40,0.2)]"
-                : "border-white/10 bg-white/[0.03] hover:border-white/20"
+                ? "border-primary bg-primary/10"
+                : "border-input hover:bg-muted"
             )}
           >
             <span
               className={cn(
-                "grid size-9 shrink-0 place-items-center rounded-lg",
-                active ? "bg-gradient-to-b from-gold-300 to-gold-500 text-ink" : "bg-white/5 text-muted-foreground"
+                "hidden size-9 shrink-0 place-items-center rounded-sm sm:grid",
+                active ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
               )}
             >
               <Icon className="size-4" />

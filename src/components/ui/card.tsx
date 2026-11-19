@@ -3,23 +3,27 @@ import { cn } from "@/lib/utils";
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("glass glass-glow rounded-3xl text-card-foreground", className)} {...props} />
+    <div ref={ref} className={cn("rounded-lg border bg-card text-card-foreground shadow-card", className)} {...props} />
   )
 );
 Card.displayName = "Card";
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col gap-2 p-6 sm:p-8", className)} {...props} />
+    <div ref={ref} className={cn("flex flex-col gap-1.5 p-6 sm:p-8", className)} {...props} />
   )
 );
 CardHeader.displayName = "CardHeader";
 
-const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
-    <h1 ref={ref} className={cn("text-2xl font-extrabold leading-tight sm:text-3xl", className)} {...props} />
-  )
-);
+type HeadingLevel = "h1" | "h2" | "h3";
+
+/** Renders an <h3> by default; pass `as="h1"` when the card is the page's main content. */
+const CardTitle = React.forwardRef<
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement> & { as?: HeadingLevel }
+>(({ className, as: Tag = "h3", ...props }, ref) => (
+  <Tag ref={ref} className={cn("text-2xl font-bold leading-tight", className)} {...props} />
+));
 CardTitle.displayName = "CardTitle";
 
 const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
@@ -38,11 +42,7 @@ CardContent.displayName = "CardContent";
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("flex items-center justify-center border-t border-white/10 px-6 py-5 sm:px-8", className)}
-      {...props}
-    />
+    <div ref={ref} className={cn("flex items-center justify-center border-t px-6 py-5 sm:px-8", className)} {...props} />
   )
 );
 CardFooter.displayName = "CardFooter";

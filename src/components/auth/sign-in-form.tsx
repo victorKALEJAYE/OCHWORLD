@@ -14,7 +14,6 @@ import { FormAlert, type AlertState } from "@/components/auth/form-alert";
 import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
-import { IslandLoader } from "@/components/brand/island-loader";
 import { createClient } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signInSchema, type SignInValues } from "@/lib/validations/auth";
@@ -47,11 +46,8 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
 
   return (
     <Card>
-      <IslandLoader active={isSubmitting} label="Signing you in" />
       <CardHeader className="text-center">
-        <CardTitle>
-          Welcome <span className="text-gold-gradient">back</span>
-        </CardTitle>
+        <CardTitle as="h1">Welcome back</CardTitle>
         <CardDescription>Sign in to save homes, book viewings and talk to agents.</CardDescription>
       </CardHeader>
 
@@ -79,7 +75,7 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
             label="Password"
             error={errors.password?.message}
             action={
-              <Link href="/forgot-password" className="text-xs font-medium text-gold-300 hover:underline">
+              <Link href="/forgot-password" className="link text-xs">
                 Forgot password?
               </Link>
             }
@@ -94,7 +90,7 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
             />
           </FormField>
 
-          <Button type="submit" variant="gold" size="lg" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="animate-spin" /> : null}
             {isSubmitting ? "Signing in…" : "Sign in"}
             {!isSubmitting && <ArrowRight />}
@@ -105,7 +101,7 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
       <CardFooter>
         <p className="text-sm text-muted-foreground">
           New to OCHWORLD?{" "}
-          <Link href="/sign-up" className="font-semibold text-gold-300 hover:underline">
+          <Link href="/sign-up" className="link">
             Create an account
           </Link>
         </p>

@@ -11,10 +11,10 @@ export function FormAlert({ state }: { state: AlertState }) {
     <div
       role={isError ? "alert" : "status"}
       className={cn(
-        "flex items-start gap-3 rounded-xl border px-4 py-3 text-sm backdrop-blur-md",
+        "flex items-start gap-3 rounded-md border px-4 py-3 text-sm",
         isError
-          ? "border-destructive/40 bg-destructive/10 text-red-200"
-          : "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+          ? "border-destructive/40 bg-destructive/10 text-destructive"
+          : "border-success/40 bg-success/10 text-success"
       )}
     >
       <Icon className="mt-0.5 size-4 shrink-0" />

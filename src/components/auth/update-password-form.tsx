@@ -49,7 +49,7 @@ export function UpdatePasswordForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle>Set a new password</CardTitle>
+        <CardTitle as="h1">Set a new password</CardTitle>
         <CardDescription>Choose a strong password you haven&apos;t used before.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -72,7 +72,7 @@ export function UpdatePasswordForm() {
               {...register("confirmPassword")}
             />
           </FormField>
-          <Button type="submit" variant="gold" size="lg" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="animate-spin" />}
             {isSubmitting ? "Saving…" : "Update password"}
           </Button>

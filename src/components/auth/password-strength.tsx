@@ -2,7 +2,8 @@ import { passwordStrength } from "@/lib/validations/auth";
 import { cn } from "@/lib/utils";
 
 const labels = ["Too weak", "Weak", "Fair", "Good", "Strong"];
-const colors = ["bg-red-400", "bg-red-400", "bg-amber-400", "bg-gold-400", "bg-emerald-400"];
+// Weak = destructive, fair/good = brand gold, strong = success. No extra colours.
+const colors = ["bg-destructive", "bg-destructive", "bg-primary", "bg-primary", "bg-success"];
 
 export function PasswordStrength({ password }: { password: string }) {
   if (!password) return null;
@@ -13,12 +14,12 @@ export function PasswordStrength({ password }: { password: string }) {
         {[1, 2, 3, 4].map((i) => (
           <span
             key={i}
-            className={cn("h-1 rounded-full transition-colors", i <= score ? colors[score] : "bg-white/10")}
+            className={cn("h-1 rounded-full transition-colors", i <= score ? colors[score] : "bg-muted")}
           />
         ))}
       </div>
       <p className="text-xs text-muted-foreground">
-        Strength: <span className="font-medium text-foreground/90">{labels[score]}</span>
+        Strength: <span className="font-medium text-foreground">{labels[score]}</span>
       </p>
     </div>
   );

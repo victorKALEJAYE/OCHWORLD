@@ -9,7 +9,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckEmailCard } from "@/components/auth/sign-up-form";
+import { CheckEmailCard } from "@/components/auth/check-email-card";
 import { FormAlert, type AlertState } from "@/components/auth/form-alert";
 import { FormField } from "@/components/auth/form-field";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
@@ -48,7 +48,7 @@ export function ForgotPasswordForm() {
   return (
     <Card>
       <CardHeader className="text-center">
-        <CardTitle>Forgot your password?</CardTitle>
+        <CardTitle as="h1">Forgot your password?</CardTitle>
         <CardDescription>Enter your email and we&apos;ll send you a link to set a new one.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -64,14 +64,14 @@ export function ForgotPasswordForm() {
               {...register("email")}
             />
           </FormField>
-          <Button type="submit" variant="gold" size="lg" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="animate-spin" />}
             {isSubmitting ? "Sending…" : "Send reset link"}
           </Button>
         </form>
       </CardContent>
       <CardFooter>
-        <Link href="/sign-in" className="inline-flex items-center gap-2 text-sm font-medium text-gold-300 hover:underline">
+        <Link href="/sign-in" className="link inline-flex items-center gap-2 text-sm">
           <ArrowLeft className="size-4" /> Back to sign in
         </Link>
       </CardFooter>

@@ -1,6 +1,16 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
+/**
+ * OCHWORLD design tokens.
+ *
+ * Brand colours are measured from the original logo artwork (gold mark on black)
+ * and must not be extended with extra shades. Tints are made with opacity
+ * (e.g. `bg-primary/10`), never with new hex values. See docs/design-system.md.
+ *
+ * Every other colour is a semantic CSS variable defined in globals.css for the
+ * light theme (default) and the dark theme (`.dark` on any wrapper).
+ */
 const config: Config = {
   darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
@@ -12,85 +22,38 @@ const config: Config = {
         display: ["var(--font-montserrat)", "var(--font-inter)", "sans-serif"],
       },
       colors: {
+        brand: {
+          gold: "#C38C25",
+          black: "#000000",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: "hsl(var(--surface))",
         primary: { DEFAULT: "hsl(var(--primary))", foreground: "hsl(var(--primary-foreground))" },
-        secondary: { DEFAULT: "hsl(var(--secondary))", foreground: "hsl(var(--secondary-foreground))" },
         destructive: { DEFAULT: "hsl(var(--destructive))", foreground: "hsl(var(--destructive-foreground))" },
+        success: { DEFAULT: "hsl(var(--success))", foreground: "hsl(var(--success-foreground))" },
         muted: { DEFAULT: "hsl(var(--muted))", foreground: "hsl(var(--muted-foreground))" },
-        accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
-        popover: { DEFAULT: "hsl(var(--popover))", foreground: "hsl(var(--popover-foreground))" },
         card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
-        // OCHWORLD brand
-        gold: {
-          100: "#FBEBC2",
-          200: "#F8DE9C",
-          300: "#F6D27A",
-          400: "#E8BC4F",
-          500: "#D7A328",
-          600: "#B8871A",
-          700: "#A9790F",
-          800: "#7A5A0E",
-        },
-        ink: "#14110A",
-        ember: { 400: "#F59E4B", 500: "#E8892B", 600: "#C96A12" },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
-      keyframes: {
-        "float-slow": {
-          "0%, 100%": { transform: "translate3d(0, 0, 0) scale(1)" },
-          "50%": { transform: "translate3d(0, -24px, 0) scale(1.05)" },
-        },
-        "gradient-x": {
-          "0%, 100%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-        },
-        shine: {
-          "0%": { transform: "translateX(-120%) skewX(-20deg)" },
-          "100%": { transform: "translateX(220%) skewX(-20deg)" },
-        },
-        progress: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(250%)" },
-        },
-        "pulse-soft": {
-          "0%, 100%": { opacity: "1", transform: "scale(1)" },
-          "50%": { opacity: "0.75", transform: "scale(0.94)" },
-        },
-        "splash-out": {
-          to: { opacity: "0", visibility: "hidden" },
-        },
-        "letter-in": {
-          "0%": { opacity: "0", transform: "translate3d(var(--from-x), 10px, 0) scale(0.9)", filter: "blur(10px)" },
-          "60%": { filter: "blur(0)" },
-          "100%": { opacity: "1", transform: "translate3d(0, 0, 0) scale(1)", filter: "blur(0)" },
-        },
-        "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(8px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
+      boxShadow: {
+        // Two elevations only: resting cards and floating layers (menus, popovers).
+        card: "0 1px 2px 0 rgb(0 0 0 / 0.05), 0 1px 3px 0 rgb(0 0 0 / 0.06)",
+        elevated: "0 12px 32px -12px rgb(0 0 0 / 0.25)",
       },
-      animation: {
-        "float-slow": "float-slow 14s ease-in-out infinite",
-        "float-slower": "float-slow 20s ease-in-out infinite reverse",
-        "spin-slower": "spin 60s linear infinite",
-        "gradient-x": "gradient-x 6s ease infinite",
-        shine: "shine 3.2s ease-in-out infinite",
-        progress: "progress 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite",
-        "pulse-soft": "pulse-soft 3s ease-in-out infinite",
-        "splash-out": "splash-out 0.6s ease 9s forwards",
-        "letter-in": "letter-in 1.4s cubic-bezier(0.22, 1, 0.36, 1) both",
-        "fade-up": "fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both",
+      maxWidth: {
+        content: "1200px",
       },
     },
   },
+  // tailwindcss-animate is kept for shadcn overlays (dialogs, menus) added in later phases.
   plugins: [animate],
 };
 

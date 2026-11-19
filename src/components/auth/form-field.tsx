@@ -21,7 +21,7 @@ export function FormField({ id, label, error, hint, action, className, children 
       </div>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="text-xs font-medium text-red-300">
+        <p id={`${id}-error`} className="text-xs font-medium text-destructive">
           {error}
         </p>
       ) : hint ? (

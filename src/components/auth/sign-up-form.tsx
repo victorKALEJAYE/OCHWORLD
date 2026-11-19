@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Loader2, MailCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
-import { IslandLoader } from "@/components/brand/island-loader";
+import { CheckEmailCard } from "@/components/auth/check-email-card";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signUpSchema, type SignUpValues } from "@/lib/validations/auth";
@@ -82,14 +82,8 @@ export function SignUpForm() {
 
   return (
     <Card>
-      <IslandLoader active={isSubmitting} label="Creating your account" />
       <CardHeader className="text-center">
-        <span className="mx-auto mb-1 inline-flex items-center gap-2 rounded-full border border-gold-500/25 bg-gold-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-200">
-          <Sparkles className="size-3.5" /> New account
-        </span>
-        <CardTitle>
-          Create your <span className="text-gold-gradient">account</span>
-        </CardTitle>
+        <CardTitle as="h1">Create your account</CardTitle>
         <CardDescription>Join OCHWORLD and find your place in Abuja.</CardDescription>
       </CardHeader>
 
@@ -180,11 +174,11 @@ export function SignUpForm() {
                   />
                   <span>
                     I agree to the{" "}
-                    <Link href="/terms" className="font-medium text-gold-300 hover:underline">
+                    <Link href="/terms" className="link">
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link href="/privacy" className="font-medium text-gold-300 hover:underline">
+                    <Link href="/privacy" className="link">
                       Privacy Policy
                     </Link>
                     .
@@ -192,10 +186,10 @@ export function SignUpForm() {
                 </label>
               )}
             />
-            {errors.acceptTerms && <p className="text-xs font-medium text-red-300">{errors.acceptTerms.message}</p>}
+            {errors.acceptTerms && <p className="text-xs font-medium text-destructive">{errors.acceptTerms.message}</p>}
           </div>
 
-          <Button type="submit" variant="gold" size="lg" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="primary" size="lg" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="animate-spin" /> : null}
             {isSubmitting ? "Creating account…" : "Create account"}
             {!isSubmitting && <ArrowRight />}
@@ -206,32 +200,10 @@ export function SignUpForm() {
       <CardFooter>
         <p className="text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link href="/sign-in" className="font-semibold text-gold-300 hover:underline">
+          <Link href="/sign-in" className="link">
             Sign in
           </Link>
         </p>
-      </CardFooter>
-    </Card>
-  );
-}
-
-export function CheckEmailCard({ email, title = "Check your email" }: { email: string; title?: string }) {
-  return (
-    <Card className="text-center">
-      <CardHeader className="items-center">
-        <span className="mb-2 grid size-14 place-items-center rounded-2xl bg-gold-500/15 text-gold-300 ring-1 ring-gold-500/30">
-          <MailCheck className="size-7" />
-        </span>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>
-          We sent a link to <span className="font-semibold text-foreground">{email}</span>. Open it on this device to
-          continue.
-        </CardDescription>
-      </CardHeader>
-      <CardFooter>
-        <Button asChild variant="glass" className="w-full">
-          <Link href="/sign-in">Back to sign in</Link>
-        </Button>
       </CardFooter>
     </Card>
   );
