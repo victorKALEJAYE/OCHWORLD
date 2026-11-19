@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { enquirySchema } from "@/lib/validations/enquiry";
@@ -48,30 +47,35 @@ export async function sendEnquiry(_prev: EnquiryState, formData: FormData): Prom
   return { status: "success" };
 }
 
-/**
- * Saves or un-saves a listing for the signed-in user. Visitors who aren't
- * signed in are sent to sign in and brought back to the listing afterwards.
- */
-export async function toggleSavedProperty(formData: FormData) {
-  const input = z
-    .object({ propertyId: z.string().uuid(), slug: z.string().min(1).max(120), saved: z.enum(["true", "false"]) })
-    .safeParse(Object.fromEntries(formData));
-  if (!input.success) return;
+export type FavouriteResult = { status: "ok" } | { status: "signed-out" } | { status: "error" };
 
-  const { propertyId, slug, saved } = input.data;
+/**
+ * Adds or removes a listing from the signed-in user's favourites
+ * (`saved_properties`). Called from the heart button on cards and property
+ * pages. Signed-out visitors get `signed-out` back and the button sends them to
+ * sign in, returning to the same page afterwards.
+ *
+ * RLS limits every change to the user's own rows and to published listings.
+ */
+export async function setFavourite(propertyId: string, favourite: boolean): Promise<FavouriteResult> {
+  if (!z.string().uuid().safeParse(propertyId).success) return { status: "error" };
+
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect(`/sign-in?next=${encodeURIComponent(`/properties/${slug}`)}`);
+  if (!user) return { status: "signed-out" };
 
-  const result =
-    saved === "true"
-      ? await supabase.from("saved_properties").delete().eq("property_id", propertyId)
-      : await supabase.from("saved_properties").insert({ property_id: propertyId });
+  const { error } = favourite
+    ? await supabase.from("saved_properties").insert({ property_id: propertyId })
+    : await supabase.from("saved_properties").delete().eq("property_id", propertyId);
 
-  // 23505 = already saved (double click); treat as success.
-  if (result.error && result.error.code !== "23505") console.error("toggleSavedProperty failed", result.error);
+  // 23505 = already a favourite (double tap): the outcome the user wanted.
+  if (error && error.code !== "23505") {
+    console.error("setFavourite failed", error);
+    return { status: "error" };
+  }
 
-  revalidatePath(`/properties/${slug}`);
+  revalidatePath("/dashboard");
+  return { status: "ok" };
 }

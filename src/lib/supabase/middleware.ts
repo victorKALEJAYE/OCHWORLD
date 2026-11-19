@@ -2,15 +2,27 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const AUTH_PAGES = ["/sign-in", "/sign-up", "/forgot-password"];
-const PROTECTED_PREFIXES = ["/dashboard", "/update-password"];
+const PROTECTED_PREFIXES = ["/dashboard", "/update-password", "/onboarding"];
 
-/** Refreshes the Supabase session cookie and guards private pages. */
+const isProtected = (pathname: string) => PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+
+/**
+ * Refreshes the Supabase session cookie and keeps signed-out visitors away
+ * from private pages. This is a convenience redirect; the data itself is
+ * protected by RLS in the database.
+ */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return response; // Not configured yet: let pages render.
+  if (!url || !key) {
+    // Fail closed in production: never serve private pages without auth configured.
+    if (process.env.NODE_ENV === "production" && isProtected(request.nextUrl.pathname)) {
+      return new NextResponse("Service temporarily unavailable", { status: 503 });
+    }
+    return response; // Local development before .env.local is set up.
+  }
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -32,7 +44,7 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (!user && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
+  if (!user && isProtected(pathname)) {
     const signIn = request.nextUrl.clone();
     signIn.pathname = "/sign-in";
     signIn.searchParams.set("next", pathname);

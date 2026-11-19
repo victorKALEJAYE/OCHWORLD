@@ -10,6 +10,7 @@ import {
   toPropertyDetail,
 } from "@/lib/properties/mappers";
 import type { DistrictSummary, OrganizationSummary, PropertyCardData, PropertyDetail } from "@/lib/properties/types";
+import { getViewer } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -167,6 +168,22 @@ export async function getSimilarProperties(districtSlug: string, excludeId: stri
     .limit(limit);
   if (error) throw new DataLoadError("similar properties", error);
   return data.map(toPropertyCard);
+}
+
+/**
+ * Which of these listings the signed-in user has favourited. Empty for guests.
+ * One query per page of cards; RLS limits it to the user's own rows. Failure
+ * is non-fatal: hearts just start empty.
+ */
+export async function getFavouriteIds(propertyIds: string[]): Promise<Set<string>> {
+  if (propertyIds.length === 0 || !(await getViewer())) return new Set();
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("saved_properties").select("property_id").in("property_id", propertyIds);
+  if (error) {
+    console.error(error);
+    return new Set();
+  }
+  return new Set(data.map((row) => row.property_id));
 }
 
 /** Whether the signed-in user has saved this property (RLS limits the check to their own rows). */

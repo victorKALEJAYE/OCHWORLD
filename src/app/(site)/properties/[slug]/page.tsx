@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { PropertyDetailView } from "@/components/property/property-detail-view";
 import { getViewer } from "@/lib/auth/viewer";
 import { formatPrice } from "@/lib/format";
-import { getPropertyBySlug, getSimilarProperties, isPropertySaved } from "@/lib/properties/queries";
+import { getFavouriteIds, getPropertyBySlug, getSimilarProperties, isPropertySaved } from "@/lib/properties/queries";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -34,10 +34,18 @@ export default async function PropertyPage({ params }: Props) {
     viewer ? isPropertySaved(property.id).catch(() => false) : false,
   ]);
 
+  const similarFavouriteIds = await getFavouriteIds(similar.map((p) => p.id));
+
   return (
     <>
       <SiteHeader />
-      <PropertyDetailView property={property} similar={similar} viewer={viewer} saved={saved} />
+      <PropertyDetailView
+        property={property}
+        similar={similar}
+        viewer={viewer}
+        saved={saved}
+        similarFavouriteIds={similarFavouriteIds}
+      />
     </>
   );
 }

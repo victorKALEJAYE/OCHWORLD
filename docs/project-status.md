@@ -8,8 +8,8 @@ Tracks completed phases, decisions and open issues. Update at the end of each ph
 |---|---|
 | 1. Codebase and architecture audit | Done (findings below) |
 | 2. Brand identity and design system | Done |
-| 3. Public website and property discovery | Done, awaiting review |
-| 4. Authentication and multi-tenant access | Not started |
+| 3. Public website and property discovery | Done |
+| 4. Authentication and multi-tenant access | Done, awaiting review |
 | 5. Agent and landlord dashboards | Not started |
 | 6. Super admin dashboard | Not started |
 | 7. Integration, testing and optimisation | Not started |
@@ -64,3 +64,22 @@ Resolved in Phase 2: off-brand colours, gradients and decorative effects, six co
 - `/terms` and `/privacy` pages still don't exist (content needed from OCHWORLD).
 
 Tests: `supabase/tests/rls_listings.test.sql`, 27 checks, all passing on PostgreSQL 16 (Phase 3).
+
+## Phase 4 decisions
+
+- **Roles live in the database only.** `profiles.role` (user-editable) is removed. Roles come from `organization_members` (owner / admin / agent per organization) and `platform_admins`. Sign-up metadata carries display details only.
+- **Column-level privileges + RLS.** RLS decides *which rows*; grants decide *which columns*. Users can edit only their profile's name/phone/avatar; organization slug and type are fixed after creation; enquiries allow only `status` to change.
+- **Helper functions** (`is_org_member`, `has_org_role`, `is_platform_admin`, `shares_organization_with`, `can_manage_property`) are `SECURITY DEFINER` + `STABLE` so policies stay short and don't recurse through each other's RLS.
+- **Role rules:** agents create and edit their organization's listings and handle enquiries; owners and admins also delete listings and manage members; only owners create owners; an organization always keeps at least one owner.
+- **Onboarding** (`/onboarding`) is the single place an account type is chosen, for email, Google and Apple sign-ups alike. Professionals get an organization created by the `complete_onboarding` database function, with themselves as owner, in one transaction.
+- **Super admins** are added only with SQL by the project owner (see README); nothing in the app can grant it.
+- **Storage:** listing photos go to `property-images/<organization_id>/<property_id>/<file>`; only members of that organization can upload, replace or delete there.
+- **Middleware fails closed in production** when Supabase isn't configured; **security headers** added (`nosniff`, frame blocking, referrer policy, HSTS, permissions policy). A full script CSP with nonces is left for Phase 7.
+
+Resolved in Phase 4: audit issues 1 (role escalation), 2 (metadata roles), 3 (middleware fail-open), 4 (tenant model), 6 (security headers, partially: script CSP pending), 8 (OAuth account type).
+
+## Phase 4 open items
+
+- Inviting people into an organization needs an invitation flow (email + accept link): Phase 5. Until then members can only be added by user id (owners/admins) or by SQL.
+- Users created before migration 3 have `onboarded_at` empty and will see onboarding once on next sign-in.
+- Tests: `supabase/tests/rls_tenancy.test.sql`, 49 checks, all passing alongside the 27 listings checks.

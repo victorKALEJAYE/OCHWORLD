@@ -1,37 +1,52 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { LayoutDashboard, LogOut } from "lucide-react";
+import Link from "next/link";
+import { LogOut, ShieldCheck } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
-import { EmptyState } from "@/components/feedback/empty-state";
+import { OrganizationPanel, SavedHomesPanel, SentEnquiriesPanel } from "@/components/dashboard/dashboard-sections";
+import { ErrorState } from "@/components/feedback/error-state";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/server";
+import { requireOnboardedAccount } from "@/lib/auth/account";
+import {
+  getOrganizationEnquiries,
+  getOrganizationStats,
+  getSavedProperties,
+  getSentEnquiries,
+} from "@/lib/dashboard/queries";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
 /**
- * Placeholder signed-in page. Role-specific dashboards (seeker, agent, landlord,
- * super admin) are built in Phases 5–6 on top of the tenant model from Phase 4.
- *
- * Note: the account type is deliberately NOT read from `user_metadata` here.
- * Users can edit their own metadata, so it must never drive access or labels
- * that imply access. Roles will come from the memberships tables in Phase 4.
+ * One dashboard for every signed-in user, with panels chosen by role:
+ *   - organization members: their organization's stats and enquiry inbox
+ *   - everyone: favourites and enquiries they've sent
+ * Listing management (Phase 5) and super admin tools (Phase 6) build on this.
  */
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/sign-in?next=/dashboard");
+  const account = await requireOnboardedAccount("/dashboard");
+  const firstName = account.name?.split(" ")[0] || "there";
 
-  const meta = user.user_metadata as { full_name?: string; name?: string };
-  const firstName = (meta.full_name ?? meta.name ?? "").split(" ")[0] || "there";
+  const data = await Promise.all([
+    Promise.all(
+      account.memberships.map(async (m) => ({
+        membership: m,
+        stats: await getOrganizationStats(m.id),
+        enquiries: await getOrganizationEnquiries(m.id),
+      }))
+    ),
+    getSavedProperties(),
+    getSentEnquiries(account.userId),
+  ]).catch((error) => {
+    console.error(error);
+    return null;
+  });
 
   return (
     <div className="min-h-dvh bg-surface">
       <header className="border-b bg-background pt-[env(safe-area-inset-top)]">
-        <div className="mx-auto flex h-16 max-w-content items-center justify-between px-4 sm:px-6">
-          <Logo href="/dashboard" />
+        <div className="mx-auto flex h-16 max-w-content items-center justify-between gap-4 px-4 sm:px-6">
+          <Logo href="/" />
           <form action="/auth/sign-out" method="post">
             <Button type="submit" variant="outline" size="sm">
               <LogOut /> Sign out
@@ -40,19 +55,38 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-content space-y-8 px-4 py-10 sm:px-6">
-        <div>
-          <p className="eyebrow">Dashboard</p>
-          <h1 className="mt-2 text-3xl font-bold">Hello, {firstName}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Signed in as {user.email}</p>
+      <main className="mx-auto max-w-content space-y-10 px-4 py-10 sm:px-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow">Dashboard</p>
+            <h1 className="mt-2 text-3xl font-bold">Hello, {firstName}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Signed in as {account.email}</p>
+          </div>
+          {account.isPlatformAdmin && (
+            <Badge variant="solid" className="px-3 py-1 text-sm">
+              <ShieldCheck /> Platform admin
+            </Badge>
+          )}
         </div>
 
-        <EmptyState
-          className="bg-background"
-          icon={LayoutDashboard}
-          title="Your dashboard is being set up"
-          description="Saved homes, enquiries and listing tools will appear here as they are released."
-        />
+        {!data ? (
+          <ErrorState
+            className="bg-background"
+            action={
+              <Button asChild variant="secondary">
+                <Link href="/dashboard">Try again</Link>
+              </Button>
+            }
+          />
+        ) : (
+          <>
+            {data[0].map(({ membership, stats, enquiries }) => (
+              <OrganizationPanel key={membership.id} membership={membership} stats={stats} enquiries={enquiries} />
+            ))}
+            <SavedHomesPanel properties={data[1]} />
+            <SentEnquiriesPanel enquiries={data[2]} />
+          </>
+        )}
       </main>
     </div>
   );

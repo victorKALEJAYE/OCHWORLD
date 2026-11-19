@@ -66,7 +66,10 @@ do $$ begin
   values ('00000000-0000-4000-a000-000000000001', 1, 'hack', 'Hacked listing', 'sale', 'residential', 'apartment', 1);
   perform pg_temp.check('anon blocked from creating listing', false);
 exception when others then perform pg_temp.check('anon blocked from creating listing', true); end $$;
-with u as (update organizations set name = 'Hacked' returning 1) select pg_temp.check('anon cannot update organizations', (select count(*) from u) = 0);
+do $$ declare n int; begin
+  update organizations set name = 'Hacked'; get diagnostics n = row_count;
+  perform pg_temp.check('anon cannot update organizations', n = 0);
+exception when insufficient_privilege then perform pg_temp.check('anon cannot update organizations', true); end $$;
 with u as (update properties set price = 1 returning 1) select pg_temp.check('anon cannot update listings', (select count(*) from u) = 0);
 with u as (delete from properties returning 1) select pg_temp.check('anon cannot delete listings', (select count(*) from u) = 0);
 reset role;
@@ -101,11 +104,11 @@ do $$ begin
   values ('00000000-0000-4000-a000-000000000001', 1, 'rent-without-period', 'Rent no period', 'rent', 'residential', 'apartment', 100);
   perform pg_temp.check('rent without rent_period rejected', false);
 exception when check_violation then perform pg_temp.check('rent without rent_period rejected', true); end $$;
-do $$ begin
-  insert into properties (organization_id, district_id, slug, title, listing_type, category, property_type, price, status)
-  values ('00000000-0000-4000-a000-000000000001', 1, 'pub-no-date', 'Published no date', 'sale', 'residential', 'apartment', 100, 'published');
-  perform pg_temp.check('published without published_at rejected', false);
-exception when check_violation then perform pg_temp.check('published without published_at rejected', true); end $$;
+-- Since migration 3 a trigger fills published_at when a listing is published.
+insert into properties (organization_id, district_id, slug, title, listing_type, category, property_type, price, status)
+values ('00000000-0000-4000-a000-000000000001', 1, 'pub-no-date', 'Published no date', 'sale', 'residential', 'apartment', 100, 'published');
+select pg_temp.check('publishing fills published_at automatically',
+  (select published_at is not null from properties where slug = 'pub-no-date'));
 do $$ begin
   insert into properties (organization_id, district_id, slug, title, listing_type, category, property_type, price)
   values ('00000000-0000-4000-a000-000000000001', 1, 'Bad Slug!', 'Bad slug here', 'sale', 'residential', 'apartment', 100);

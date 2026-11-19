@@ -47,6 +47,8 @@ export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountTy
   });
 
   const password = watch("password");
+  // Account type is only a starting point for onboarding; it grants nothing.
+  const onboardingPath = `/onboarding?type=${watch("accountType") === "agent" ? "agency" : "seeker"}`;
 
   async function onSubmit(values: SignUpValues) {
     setAlert(null);
@@ -56,11 +58,11 @@ export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountTy
         email: values.email,
         password: values.password,
         options: {
-          emailRedirectTo: `${getSiteUrl()}/auth/callback?next=/dashboard`,
+          emailRedirectTo: `${getSiteUrl()}/auth/callback?next=${encodeURIComponent(onboardingPath)}`,
+          // Display details only. Roles come from organization membership, never from metadata.
           data: {
             full_name: values.fullName,
             phone: values.phone || null,
-            role: values.accountType,
           },
         },
       });
@@ -68,7 +70,7 @@ export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountTy
 
       if (data.session) {
         // Email confirmation is off in Supabase: the user is signed in already.
-        router.replace("/dashboard");
+        router.replace(onboardingPath);
         router.refresh();
       } else {
         setSentTo(values.email);
@@ -88,7 +90,7 @@ export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountTy
       </CardHeader>
 
       <CardContent className="space-y-6">
-        <OAuthButtons disabled={isSubmitting} onError={(message) => setAlert({ type: "error", message })} />
+        <OAuthButtons next={onboardingPath} disabled={isSubmitting} onError={(message) => setAlert({ type: "error", message })} />
         <OrDivider label="or sign up with email" />
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">

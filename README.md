@@ -8,7 +8,7 @@ shadcn/ui and Supabase.
 
 Currently built: the public marketplace (homepage, search, listings, property pages, areas, agents),
 authentication (Google, Apple, email + password) and the design system.
-Tenant membership and dashboards follow in later phases.
+Organization membership, roles and onboarding are in place; listing management and admin tools follow.
 
 ## 1. Install
 
@@ -30,9 +30,14 @@ npm install
 3. **Authentication → URL Configuration**
    - Site URL: `http://localhost:3000`
    - Redirect URLs: add `http://localhost:3000/auth/callback` (and your live domain's `/auth/callback` later)
-4. **SQL Editor** → run the files in `supabase/migrations/` **in order** (profiles, then listings).
+4. **SQL Editor** → run the files in `supabase/migrations/` **in order** (profiles, listings, tenancy).
    With the Supabase CLI instead: `npx supabase link` then `npx supabase db push`.
-5. **Development/staging only:** run `supabase/seed.sql` for fictional test listings marked "(test)". Never on production.
+5. Make yourself super admin (SQL Editor, once you've signed up):
+   ```sql
+   insert into public.platform_admins (user_id, note)
+   select id, 'founder' from auth.users where email = 'you@example.com';
+   ```
+6. **Development/staging only:** run `supabase/seed.sql` for fictional test listings marked "(test)". Never on production.
 
 ## 3. Turn on Google and Apple
 
@@ -72,7 +77,8 @@ Open http://localhost:3000 for the homepage, and http://localhost:3000/design-sy
 | `/update-password` | Set a new password (from the reset email) |
 | `/auth/callback` | Finishes Google/Apple/email-link sign-in |
 | `/auth/sign-out` | POST — signs out |
-| `/dashboard` | Protected page (redirects to sign-in when logged out) |
+| `/onboarding` | One-time account setup after sign-up (seeker, agency, landlord, developer) |
+| `/dashboard` | Signed-in home: organization stats and enquiry inbox for members; saved homes and sent enquiries for everyone |
 | `/design-system` | Design system reference (development only) |
 
 ## Project structure

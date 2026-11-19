@@ -5,7 +5,7 @@ import { OrganizationCard } from "@/components/property/organization-card";
 import { PropertyFacts } from "@/components/property/property-facts";
 import { PropertyGallery } from "@/components/property/property-gallery";
 import { PropertyGrid } from "@/components/property/property-grid";
-import { SaveButton } from "@/components/property/save-button";
+import { FavouriteButton } from "@/components/property/favourite-button";
 import { Badge } from "@/components/ui/badge";
 import { formatListedDate, formatPrice } from "@/lib/format";
 import { propertiesHref } from "@/lib/properties/filters";
@@ -16,11 +16,14 @@ type Props = {
   property: PropertyDetail;
   similar: PropertyCardData[];
   viewer: Viewer | null;
+  /** Whether the viewer has this property in favourites. */
   saved: boolean;
+  /** Which similar listings the viewer has favourited. */
+  similarFavouriteIds?: ReadonlySet<string>;
 };
 
 /** Property detail page body. Data is loaded by the route and passed in. */
-export function PropertyDetailView({ property, similar, viewer, saved }: Props) {
+export function PropertyDetailView({ property, similar, viewer, saved, similarFavouriteIds }: Props) {
   const location = [property.address, property.district, "Abuja"].filter(Boolean).join(", ");
 
   return (
@@ -111,9 +114,9 @@ export function PropertyDetailView({ property, similar, viewer, saved }: Props) 
               />
             </div>
           </div>
-          <SaveButton propertyId={property.id} slug={property.slug} saved={saved} />
+          <FavouriteButton propertyId={property.id} initialFavourite={saved} variant="full" />
           {!viewer && (
-            <p className="text-center text-xs text-muted-foreground">Sign in to save properties and track enquiries.</p>
+            <p className="text-center text-xs text-muted-foreground">Sign in to keep favourites and track your enquiries.</p>
           )}
         </aside>
       </div>
@@ -126,7 +129,7 @@ export function PropertyDetailView({ property, similar, viewer, saved }: Props) 
               View all
             </Link>
           </div>
-          <PropertyGrid properties={similar} />
+          <PropertyGrid properties={similar} favouriteIds={similarFavouriteIds} />
         </section>
       )}
     </main>

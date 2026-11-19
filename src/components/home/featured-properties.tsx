@@ -6,7 +6,7 @@ import { ErrorState } from "@/components/feedback/error-state";
 import { PropertyGrid } from "@/components/property/property-grid";
 import { PropertyGridSkeleton } from "@/components/property/property-card-skeleton";
 import { Button } from "@/components/ui/button";
-import { getFeaturedProperties } from "@/lib/properties/queries";
+import { getFavouriteIds, getFeaturedProperties } from "@/lib/properties/queries";
 import type { PropertyCardData } from "@/lib/properties/types";
 
 /** Loads featured listings. Rendered inside <Suspense> so the hero shows immediately. */
@@ -29,14 +29,21 @@ export async function FeaturedProperties() {
       </FeaturedShell>
     );
   }
-  return <FeaturedPropertiesView properties={properties} />;
+  const favouriteIds = await getFavouriteIds(properties.map((p) => p.id));
+  return <FeaturedPropertiesView properties={properties} favouriteIds={favouriteIds} />;
 }
 
-export function FeaturedPropertiesView({ properties }: { properties: PropertyCardData[] }) {
+export function FeaturedPropertiesView({
+  properties,
+  favouriteIds,
+}: {
+  properties: PropertyCardData[];
+  favouriteIds?: ReadonlySet<string>;
+}) {
   return (
     <FeaturedShell>
       {properties.length > 0 ? (
-        <PropertyGrid properties={properties} />
+        <PropertyGrid properties={properties} favouriteIds={favouriteIds} />
       ) : (
         <EmptyState
           icon={Building2}

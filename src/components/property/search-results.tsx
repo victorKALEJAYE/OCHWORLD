@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { pluralize } from "@/lib/format";
 import { PAGE_SIZE } from "@/lib/properties/constants";
 import { hasActiveFilters, propertiesHref, type PropertyFilters } from "@/lib/properties/filters";
-import { searchProperties, type SearchResult } from "@/lib/properties/queries";
+import { getFavouriteIds, searchProperties, type SearchResult } from "@/lib/properties/queries";
 
 /** Fetches and renders results. Wrapped in <Suspense> by the page, keyed by the filters. */
 export async function SearchResults({ filters }: { filters: PropertyFilters }) {
@@ -27,10 +27,19 @@ export async function SearchResults({ filters }: { filters: PropertyFilters }) {
       />
     );
   }
-  return <SearchResultsView result={result} filters={filters} />;
+  const favouriteIds = await getFavouriteIds(result.items.map((p) => p.id));
+  return <SearchResultsView result={result} filters={filters} favouriteIds={favouriteIds} />;
 }
 
-export function SearchResultsView({ result, filters }: { result: SearchResult; filters: PropertyFilters }) {
+export function SearchResultsView({
+  result,
+  filters,
+  favouriteIds,
+}: {
+  result: SearchResult;
+  filters: PropertyFilters;
+  favouriteIds?: ReadonlySet<string>;
+}) {
   if (result.items.length === 0) {
     const pastEnd = filters.page > 1;
     return (
@@ -65,7 +74,7 @@ export function SearchResultsView({ result, filters }: { result: SearchResult; f
           ? `Showing ${first + 1}–${first + result.items.length} of ${pluralize(result.total, "property", "properties")}`
           : pluralize(result.total, "property", "properties")}
       </p>
-      <PropertyGrid properties={result.items} />
+      <PropertyGrid properties={result.items} favouriteIds={favouriteIds} />
       <Pagination filters={filters} pageCount={result.pageCount} />
     </div>
   );

@@ -7,6 +7,7 @@ import { DisplayHeading } from "@/components/brand/display-heading";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { SiteHeader } from "@/components/layout/site-header";
+import { FavouriteButton } from "@/components/property/favourite-button";
 import { PropertyCard } from "@/components/property/property-card";
 import { PropertyCardSkeleton } from "@/components/property/property-card-skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -226,11 +227,7 @@ export default function DesignSystemPage() {
               <PropertyCard
                 key={p.id}
                 property={p}
-                saveAction={
-                  <Button variant="outline" size="icon" className="size-9 bg-background" aria-label="Save property">
-                    <Heart />
-                  </Button>
-                }
+                saveAction={<FavouriteButton propertyId={p.id} initialFavourite={p.id === "example-2"} />}
               />
             ))}
           </div>
