@@ -1,12 +1,16 @@
+import type { Enums } from "@/lib/supabase/database.types";
+
 /**
- * View-model for property cards and lists.
+ * View-models for the UI.
  *
- * This is what UI components receive, not the database row. In Phase 3 a
- * mapper (`toPropertyCard(row)`) will build it from the Supabase `properties`
- * table, so UI stays stable if the schema changes.
+ * Components receive these, not database rows. `mappers.ts` builds them from
+ * Supabase results, so the UI stays stable if the schema changes.
  */
-export type ListingType = "sale" | "rent";
-export type RentPeriod = "year" | "month";
+export type ListingType = Enums<"listing_type">;
+export type RentPeriod = Enums<"rent_period">;
+export type PropertyCategory = Enums<"property_category">;
+export type PropertyType = Enums<"property_type">;
+export type OrganizationType = Enums<"organization_type">;
 
 export type PropertyCardData = {
   id: string;
@@ -22,9 +26,43 @@ export type PropertyCardData = {
   district: string;
   bedrooms?: number;
   bathrooms?: number;
-  /** Floor area in square metres. */
+  /** Floor area (or plot size for land) in square metres. */
   areaSqm?: number;
-  /** Public image URL (Supabase Storage). Omit to show the placeholder. */
+  /** Public image URL. Omit to show the placeholder. */
   imageUrl?: string;
   isFeatured?: boolean;
+};
+
+export type PropertyImage = { url: string; alt: string };
+
+export type ListingOrganization = {
+  id: string;
+  name: string;
+  slug: string;
+  type: OrganizationType;
+  /** Business phone; never set for private landlords. */
+  phone?: string;
+};
+
+export type PropertyDetail = PropertyCardData & {
+  description?: string;
+  category: PropertyCategory;
+  propertyType: PropertyType;
+  districtSlug: string;
+  address?: string;
+  isFurnished: boolean;
+  features: string[];
+  publishedAt?: string;
+  images: PropertyImage[];
+  organization: ListingOrganization;
+};
+
+export type DistrictSummary = {
+  name: string;
+  slug: string;
+  listingCount: number;
+};
+
+export type OrganizationSummary = Omit<ListingOrganization, "id" | "phone"> & {
+  about?: string;
 };

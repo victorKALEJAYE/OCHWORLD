@@ -1,6 +1,6 @@
--- OCHWORLD: user profiles
--- Run once in Supabase → SQL Editor. Creates a profile row for every new
--- sign-up (email, Google or Apple), copying the name/phone/role from sign-up.
+-- Migration 1: user profiles (originally supabase/schema.sql).
+-- Creates a profile row for every new sign-up (email, Google or Apple).
+-- Known issue (fixed in Phase 4): the UPDATE policy lets a user change their own `role`.
 
 create table if not exists public.profiles (
   id          uuid primary key references auth.users (id) on delete cascade,

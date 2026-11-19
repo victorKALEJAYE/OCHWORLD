@@ -26,3 +26,19 @@ export function formatNairaCompact(amount: number) {
 export function formatPrice(amount: number, rentPeriod?: RentPeriod) {
   return rentPeriod ? `${formatNaira(amount)} / ${rentPeriod}` : formatNaira(amount);
 }
+
+const relative = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+/** "Listed today", "Listed 3 days ago", "Listed 2 months ago". */
+export function formatListedDate(iso: string, now = new Date()) {
+  const days = Math.round((now.getTime() - new Date(iso).getTime()) / 86_400_000);
+  if (days < 1) return "Listed today";
+  if (days < 30) return `Listed ${relative.format(-days, "day")}`;
+  if (days < 365) return `Listed ${relative.format(-Math.round(days / 30), "month")}`;
+  return `Listed ${relative.format(-Math.round(days / 365), "year")}`;
+}
+
+/** "1 property" / "24 properties". */
+export function pluralize(count: number, singular: string, plural = `${singular}s`) {
+  return `${count.toLocaleString()} ${count === 1 ? singular : plural}`;
+}

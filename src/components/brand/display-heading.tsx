@@ -12,7 +12,7 @@ type DisplayHeadingProps = {
 
 const sizes = {
   lg: "text-[2.5rem] sm:text-5xl 2xl:text-6xl",
-  xl: "text-5xl sm:text-7xl lg:text-8xl",
+  xl: "text-[2.35rem] min-[400px]:text-[2.6rem] sm:text-7xl lg:text-8xl",
 };
 
 /**

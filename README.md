@@ -6,8 +6,9 @@ shadcn/ui and Supabase.
 - **Design system:** [`docs/design-system.md`](docs/design-system.md), live at `/design-system` in development.
 - **Project status, decisions and open issues:** [`docs/project-status.md`](docs/project-status.md).
 
-Currently built: authentication (Google, Apple, email + password) and the design system.
-Property discovery, tenants and dashboards follow in later phases.
+Currently built: the public marketplace (homepage, search, listings, property pages, areas, agents),
+authentication (Google, Apple, email + password) and the design system.
+Tenant membership and dashboards follow in later phases.
 
 ## 1. Install
 
@@ -29,7 +30,9 @@ npm install
 3. **Authentication → URL Configuration**
    - Site URL: `http://localhost:3000`
    - Redirect URLs: add `http://localhost:3000/auth/callback` (and your live domain's `/auth/callback` later)
-4. **SQL Editor** → paste and run `supabase/schema.sql` (creates the `profiles` table).
+4. **SQL Editor** → run the files in `supabase/migrations/` **in order** (profiles, then listings).
+   With the Supabase CLI instead: `npx supabase link` then `npx supabase db push`.
+5. **Development/staging only:** run `supabase/seed.sql` for fictional test listings marked "(test)". Never on production.
 
 ## 3. Turn on Google and Apple
 
@@ -51,12 +54,18 @@ Until a provider is enabled, its button shows a friendly "isn't switched on yet"
 npm run dev
 ```
 
-Open http://localhost:3000 → you land on **/sign-in** (until the Phase 3 homepage), and http://localhost:3000/design-system for the design system.
+Open http://localhost:3000 for the homepage, and http://localhost:3000/design-system for the design system.
 
 ## Routes
 
 | Route | What it does |
 |---|---|
+| `/` | Homepage: hero search, featured listings, categories, popular areas |
+| `/properties` | Search with filters in the URL (`listing`, `category`, `type`, `district`, `agency`, `minPrice`, `maxPrice`, `beds`, `sort`, `page`) |
+| `/properties/[slug]` | Property page: photos, facts, enquiry form, save, similar listings |
+| `/areas` | Districts with listing counts |
+| `/agents` | Agencies, developers and landlords |
+| `/list-property` | For agents/landlords; sign-up entry point |
 | `/sign-in` | Google, Apple or email sign-in |
 | `/sign-up` | Account type, name, email, phone, password strength, terms |
 | `/forgot-password` | Sends a reset link |
@@ -97,7 +106,9 @@ src/
 │  ├─ auth-errors.ts       # friendly error copy
 │  └─ utils.ts             # cn()
 └─ middleware.ts           # refreshes session, guards /dashboard
-supabase/schema.sql        # profiles table + trigger (to be replaced by migrations in Phase 4)
+supabase/migrations/       # database schema, RLS policies (apply in order)
+supabase/seed.sql          # TEST data for local/staging only
+supabase/tests/            # RLS tests (see supabase/tests/README.md)
 docs/                      # design system, project status
 ```
 

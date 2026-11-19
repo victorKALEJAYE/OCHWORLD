@@ -22,7 +22,7 @@ import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signUpSchema, type SignUpValues } from "@/lib/validations/auth";
 
-export function SignUpForm() {
+export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountType?: SignUpValues["accountType"] }) {
   const router = useRouter();
   const [alert, setAlert] = React.useState<AlertState>(null);
   const [sentTo, setSentTo] = React.useState<string | null>(null);
@@ -39,7 +39,7 @@ export function SignUpForm() {
       fullName: "",
       email: "",
       phone: "",
-      accountType: "seeker",
+      accountType: defaultAccountType,
       password: "",
       confirmPassword: "",
       acceptTerms: false,

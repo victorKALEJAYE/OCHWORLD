@@ -7,8 +7,8 @@ Tracks completed phases, decisions and open issues. Update at the end of each ph
 | Phase | Status |
 |---|---|
 | 1. Codebase and architecture audit | Done (findings below) |
-| 2. Brand identity and design system | Done, awaiting review |
-| 3. Public website and property discovery | Not started |
+| 2. Brand identity and design system | Done |
+| 3. Public website and property discovery | Done, awaiting review |
 | 4. Authentication and multi-tenant access | Not started |
 | 5. Agent and landlord dashboards | Not started |
 | 6. Super admin dashboard | Not started |
@@ -31,18 +31,36 @@ Security (fix in Phase 4, before real data):
 2. Account type is stored in `user_metadata`, which users can edit. It must never drive authorisation. (Phase 2 stopped the dashboard from displaying it.)
 3. Middleware skips protection when Supabase env vars are missing; it should fail closed in production.
 4. No tenant model (organisations, memberships, platform admins).
-5. No `supabase/migrations`, no generated database types, `updated_at` never updated.
+5. Database types are hand-written (`src/lib/supabase/database.types.ts`); generate them once the Supabase CLI is linked. `profiles.updated_at` is never updated (listings tables have a trigger).
 6. No security headers (CSP etc.) in `next.config.ts`.
 
 Product:
 
-7. `/` redirects to `/sign-in` (Phase 3 replaces it with the marketplace homepage).
 8. Google/Apple sign-ups never choose an account type (Phase 4 onboarding).
 9. `/terms` and `/privacy` pages don't exist.
 
 Engineering:
 
 10. No ESLint/Prettier, tests or CI.
-11. Supabase project state unknown: confirm whether `supabase/schema.sql` was run.
+11. Supabase project state unknown: confirm whether the profiles migration (formerly `supabase/schema.sql`) was run, then apply the listings migration.
 
 Resolved in Phase 2: off-brand colours, gradients and decorative effects, six competing loaders, `CheckEmailCard` placement, every card title rendered as `h1`, hard-coded `rgba()` colours, placeholder dashboard features presented as real.
+
+## Phase 3 decisions
+
+- **Listings belong to an organization** (`properties.organization_id`) from day one, so Phase 4 only adds membership on top.
+- **Public read, no public write.** RLS lets anyone read organizations, districts and *published* listings/images. Nobody can write listings yet (no INSERT/UPDATE/DELETE policies) until Phase 4/5 adds membership-based policies.
+- **Enquiries**: anyone (guest or signed in) can send one on a published listing. A trigger sets `organization_id` from the property and `sender_user_id` from the session, so neither can be spoofed. Nobody can read enquiries until Phase 4. A honeypot field blocks simple bots; **rate limiting is still needed** before launch (Supabase captcha or an edge rate limit).
+- **Contact details are protected in the database**, not just hidden in the UI: the public roles can't read `organizations.phone`/`email` at all. Business phone numbers come from the `organization_contacts` view, which returns null for private landlords (they're reached through enquiries). Emails are never public.
+- **Filters live in the URL** and forms are plain GET forms, so search works without JavaScript and every search can be shared.
+- **Sign-up only when needed**: browsing never asks for an account; saving a property sends signed-out visitors to sign in and back.
+- `@supabase/ssr` 0.5's types don't match the installed `@supabase/supabase-js`; the clients are cast to `SupabaseClient<Database>` (documented in `lib/supabase/server.ts`). Upgrade `@supabase/ssr` and remove the cast.
+
+## Phase 3 open items
+
+- No photos yet: uploads come with the agent dashboard (Phase 5). Seed data has none; cards show a placeholder.
+- Area ratings (security, power, water) need a real data source before they appear on `/areas`.
+- Saving from listing cards (not just the property page) and a "Saved homes" page come with the seeker dashboard.
+- `/terms` and `/privacy` pages still don't exist (content needed from OCHWORLD).
+
+Tests: `supabase/tests/rls_listings.test.sql`, 27 checks, all passing on PostgreSQL 16 (Phase 3).
