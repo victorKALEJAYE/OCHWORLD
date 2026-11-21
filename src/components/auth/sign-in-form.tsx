@@ -48,7 +48,7 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
     <Card>
       <CardHeader className="text-center">
         <CardTitle as="h1">Welcome back</CardTitle>
-        <CardDescription>Sign in to save homes, book viewings and talk to agents.</CardDescription>
+        <CardDescription>Sign in to save homes and manage your enquiries.</CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
