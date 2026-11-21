@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 const sizes = {
@@ -9,29 +10,44 @@ const sizes = {
 
 type BrandLoaderProps = {
   size?: keyof typeof sizes;
-  /** Read by screen readers only; nothing is printed on screen. */
+  /** Read by screen readers only. */
   label?: string;
+  /** Show the OCHWORLD wordmark under the logo (full-page loaders). */
+  withName?: boolean;
   className?: string;
 };
 
+const nameSizes = { sm: "text-sm", md: "text-base", lg: "text-lg" } as const;
+
 /**
  * The only loading animation in the product: the logo with a thin gold arc
- * turning around it. Used for initial app load and page navigation.
- * Data inside a page uses skeletons instead (see components/ui/skeleton).
+ * turning around it, optionally with the wordmark underneath. Used for the
+ * first visit and page navigation. Data inside a page uses skeletons instead
+ * (see components/ui/skeleton).
  */
-export function BrandLoader({ size = "md", label = "Loading", className }: BrandLoaderProps) {
+export function BrandLoader({ size = "md", label = "Loading", withName = false, className }: BrandLoaderProps) {
   const s = sizes[size];
   return (
-    <div role="status" className={cn("relative grid place-items-center", s.box, className)}>
-      <span aria-hidden="true" className={cn("absolute inset-0 rounded-full border-primary/15", s.ring)} />
-      <span
-        aria-hidden="true"
-        className={cn(
-          "absolute inset-0 animate-spin rounded-full border-transparent border-t-primary [animation-duration:1.1s]",
-          s.ring
-        )}
-      />
-      <Image src="/ochworld-mark.png" alt="" width={80} height={62} priority className={cn("h-auto", s.logo)} />
+    <div role="status" className={cn("flex flex-col items-center gap-4", className)}>
+      <div className={cn("relative grid place-items-center", s.box)}>
+        <span aria-hidden="true" className={cn("absolute inset-0 rounded-full border-primary/15", s.ring)} />
+        <span
+          aria-hidden="true"
+          className={cn(
+            "absolute inset-0 animate-spin rounded-full border-transparent border-t-primary [animation-duration:1.1s]",
+            s.ring
+          )}
+        />
+        <Image src="/ochworld-mark.png" alt="" width={80} height={62} priority className={cn("h-auto", s.logo)} />
+      </div>
+      {withName && (
+        <span
+          aria-hidden="true"
+          className={cn("font-display font-bold tracking-[0.2em] text-brand-gold", nameSizes[size])}
+        >
+          {siteConfig.name}
+        </span>
+      )}
       <span className="sr-only">{label}</span>
     </div>
   );
@@ -41,7 +57,7 @@ export function BrandLoader({ size = "md", label = "Loading", className }: Brand
 export function PageLoader({ label, className }: { label?: string; className?: string }) {
   return (
     <div className={cn("grid min-h-[60dvh] place-items-center", className)}>
-      <BrandLoader size="lg" label={label} />
+      <BrandLoader size="lg" label={label} withName />
     </div>
   );
 }

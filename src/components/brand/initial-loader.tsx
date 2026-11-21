@@ -10,7 +10,7 @@ const FADE_MS = 400;
 
 /**
  * Loader shown when the site first opens in a browser session: black screen,
- * logo with the turning gold ring, nothing else. It fades out as soon as the
+ * logo with the turning gold ring and the OCHWORLD name underneath. It fades out as soon as the
  * page has loaded (never later), so it doesn't slow anyone down.
  *
  * - Later page changes in the same session use app/loading.tsx instead.
@@ -53,7 +53,7 @@ export function InitialLoader() {
 
   return (
     <div className="initial-loader dark" data-state={state} aria-hidden={state === "done"}>
-      <BrandLoader size="lg" label="Loading OCHWORLD" />
+      <BrandLoader size="lg" label="Loading OCHWORLD" withName />
     </div>
   );
 }
