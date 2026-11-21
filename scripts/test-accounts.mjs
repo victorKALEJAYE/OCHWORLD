@@ -22,6 +22,7 @@
 import { randomBytes } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
+import { checkTarget } from "./lib/target.mjs";
 
 const SAMPLE_ORG = {
   name: "OCHWORLD Sample Listings",
@@ -57,6 +58,8 @@ const secret = process.env.SUPABASE_SECRET_KEY;
 if (!url) fail("NEXT_PUBLIC_SUPABASE_URL is missing from .env.local");
 if (!secret || secret.startsWith("PASTE")) fail("SUPABASE_SECRET_KEY is missing from .env.local (Supabase → Project Settings → API Keys → Secret key).");
 if (secret.startsWith("sb_publishable_")) fail("SUPABASE_SECRET_KEY is the publishable key. Use the Secret key (sb_secret_...).");
+
+checkTarget(url);
 
 const supabase = createClient(url, secret, { auth: { persistSession: false, autoRefreshToken: false } });
 

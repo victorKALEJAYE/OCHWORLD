@@ -24,7 +24,9 @@ Organization membership, roles and onboarding are in place; listing management a
 | `npm run samples:add` / `samples:remove` | Add/remove the 10 sample listings (needs `SUPABASE_SECRET_KEY`) |
 | `npm run test-accounts:add` / `test-accounts:remove` | Create/remove test logins (needs `SUPABASE_SECRET_KEY`) |
 
-Every push runs the CI pipeline (`.github/workflows/ci.yml`): checks and database tests first, then new migrations are applied to Supabase.
+**Workflow:** push to the `staging` branch → CI checks → staging database and staging site update → test there → merge `staging` into `main` → live site and database update. Details: [docs/architecture.md § Delivery pipeline](docs/architecture.md#8-delivery-pipeline).
+
+Admin scripts write to whatever `.env.local` points at (should be **staging**); they refuse production unless you add `-- --production`.
 
 ## 1. Install
 

@@ -18,6 +18,7 @@
  * Same data as supabase/sample-listings.sql. Safe to run repeatedly.
  */
 import { createClient } from "@supabase/supabase-js";
+import { checkTarget } from "./lib/target.mjs";
 
 const ORG = {
   name: "OCHWORLD Sample Listings",
@@ -87,6 +88,8 @@ if (!secret || secret.startsWith("PASTE")) {
 if (secret.startsWith("sb_publishable_")) {
   fail("SUPABASE_SECRET_KEY is the publishable key. Use the Secret key (sb_secret_...) or the service_role key.");
 }
+
+checkTarget(url);
 
 const supabase = createClient(url, secret, { auth: { persistSession: false, autoRefreshToken: false } });
 const mode = process.argv[2];

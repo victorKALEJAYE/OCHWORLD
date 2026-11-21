@@ -2,29 +2,31 @@
 #   1. app       typecheck, unit tests, production build
 #   2. database  build the database from the migrations in a throwaway Postgres
 #                and run the 100+ security (RLS) tests
-#   3. migrate   main branch only, and only if 1 and 2 passed: apply new
-#                migrations to the live Supabase database
-# Vercel deploys the website separately. See docs/architecture.md.
+#   3. migrate   only if 1 and 2 passed:
+#                  staging branch → STAGING Supabase project
+#                  main branch    → PRODUCTION Supabase project
+# Vercel deploys the website separately (staging branch → preview link,
+# main → live site). See docs/architecture.md, "Delivery pipeline".
 #
-# The migrate job needs three repository secrets
-# (Settings → Secrets and variables → Actions):
+# The migrate job reads three secrets from the GitHub *environment* named
+# "staging" or "production" (Settings → Environments → <name> → secrets):
 #   SUPABASE_ACCESS_TOKEN  Supabase → Account → Access Tokens (starts with sbp_)
-#   SUPABASE_DB_PASSWORD   Supabase → Project Settings → Database
-#   SUPABASE_PROJECT_ID    the project reference, e.g. rtosuaubgdeilywnefla
+#   SUPABASE_DB_PASSWORD   that project's database password
+#   SUPABASE_PROJECT_ID    that project's reference
 
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
   workflow_dispatch:
 
-# A newer push to the same branch cancels checks still running for an older one.
-# (The migrate job has its own, non-cancelling lock below.)
+# A newer push to a feature branch cancels checks still running for an older
+# one. Never on main/staging, so a migration is never interrupted.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/staging' }}
 
 jobs:
   app:
@@ -73,14 +75,20 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
 
   migrate:
-    name: Apply migrations to Supabase
+    name: Apply migrations (${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }})
     needs: [app, database]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging') && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Never run two migration jobs against the live database at once.
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+    env:
+      TARGET: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+      # The live project. Not secret (it's in the public Supabase URL); used to
+      # make sure staging can never touch production and vice versa.
+      PRODUCTION_PROJECT_ID: rtosuaubgdeilywnefla
+    # Never run two migration jobs against the same database at once.
     concurrency:
-      group: supabase-migrations
+      group: supabase-migrations-${{ github.ref }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
@@ -116,14 +124,25 @@ jobs:
             echo "::error::SUPABASE_PROJECT_ID should be the 20-letter project reference."
             exit 1
           fi
-          echo "All three secrets look right."
+          # Safety net: the wrong environment's secrets must never be used.
+          if [ "$TARGET" = "staging" ] && [ "$SUPABASE_PROJECT_ID" = "$PRODUCTION_PROJECT_ID" ]; then
+            echo "::error::The staging environment points at the PRODUCTION project. Add the staging project's secrets under Settings → Environments → staging."
+            exit 1
+          fi
+          if [ "$TARGET" = "production" ] && [ "$SUPABASE_PROJECT_ID" != "$PRODUCTION_PROJECT_ID" ]; then
+            echo "::error::The production environment doesn't point at the production project ($PRODUCTION_PROJECT_ID)."
+            exit 1
+          fi
+          echo "Secrets look right. Target: $TARGET"
 
       - name: Connect to the Supabase project
         run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
-      # Migrations 1-3 were applied by hand before automation existed; this
-      # keeps them recorded as applied. Harmless when already recorded.
+      # Production only: migrations 1-3 were applied by hand before automation
+      # existed; this keeps them recorded as applied. (Staging is built from
+      # scratch by the CLI, so it needs no repair.)
       - name: Record migrations applied by hand
+        if: env.TARGET == 'production'
         run: supabase migration repair --status applied 20261119000001 20261119000002 20261120000003
 
       - name: Preview what will run

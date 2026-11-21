@@ -185,12 +185,34 @@ linting/formatting (needs ESLint + Prettier installed).
 
 ## 8. Delivery pipeline
 
-1. Work locally (`npm run dev`, `npm test`, `npm run typecheck`).
-2. Push to `main` (or open a pull request).
-3. **CI** (`.github/workflows/ci.yml`): app checks and database tests in
-   parallel. If either fails, nothing reaches the database.
-4. **Migrate** (main only): applies new migrations to Supabase.
-5. **Vercel** builds and deploys the site.
+Two environments, each with its own website and its own database:
+
+| | Staging | Production |
+|---|---|---|
+| Git branch | `staging` | `main` |
+| Website | Vercel preview link for the `staging` branch | Live site |
+| Database | Supabase project `ochworld-staging` | Supabase project `rtosuaubgdeilywnefla` |
+| Data | Test accounts, sample listings, anything | Real users and listings only |
+| Who uses it | You and testers | The public |
+
+```
+ work ──push──▶ staging ──CI checks──▶ staging DB + staging site ──you test──┐
+                                                                            │ merge
+ live site + live DB ◀──CI checks── main ◀──────────────────────────────────┘
+```
+
+1. Work locally (`npm run dev`, `npm test`). `.env.local` points at **staging**.
+2. Push to `staging`. **CI** (`.github/workflows/ci.yml`) runs app checks and
+   database tests; if they pass it applies migrations to the staging database,
+   and Vercel deploys the staging link.
+3. Test on the staging link.
+4. Merge `staging` into `main` on GitHub (pull request). CI runs again and
+   applies migrations to production; Vercel deploys the live site.
+
+Safety nets: migrations never run if checks fail; each GitHub environment has
+its own secrets, and the pipeline refuses to run if staging's secrets point at
+the production project (or the reverse); the admin scripts in `scripts/` refuse
+to write to production without an explicit `--production`.
 
 ### Changing the database
 
@@ -200,15 +222,17 @@ linting/formatting (needs ESLint + Prettier installed).
    `drop policy if exists` before `create policy`).
 3. Add checks to `supabase/tests/` for any new table or policy.
 4. Update `src/lib/supabase/database.types.ts`.
-5. Push. CI tests it, then applies it.
+5. Push to `staging`, test, then merge to `main`.
 
 ## 9. Environments and secrets
 
 | Where | Values | Notes |
 |---|---|---|
-| `.env.local` (your computer, git-ignored) | Supabase URL, publishable key, site URL, `SUPABASE_SECRET_KEY` | Secret key only for `scripts/` |
-| Vercel | Supabase URL, publishable key, site URL | **Never** the secret key |
-| GitHub Actions secrets | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID` | Used only by the migrate job |
+| `.env.local` (your computer, git-ignored) | **Staging** URL, publishable key, `SUPABASE_SECRET_KEY` | Local dev and admin scripts use staging |
+| Vercel → Preview (branch `staging`) | Staging URL + publishable key, staging site URL | |
+| Vercel → Production | Production URL + publishable key, live site URL | **Never** a secret key |
+| GitHub → Environments → `staging` | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID` (staging) | Used by the migrate job |
+| GitHub → Environments → `production` | Same three, for production | Used by the migrate job |
 
 ## 10. Known gaps
 
