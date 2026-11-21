@@ -79,14 +79,15 @@ export async function getSentEnquiries(userId: string, limit = 5): Promise<Enqui
 }
 
 /** Latest enquiries received by an organization. */
-export async function getOrganizationEnquiries(organizationId: string, limit = 5): Promise<EnquirySummary[]> {
+export async function getOrganizationEnquiries(
+  organizationId: string,
+  limit = 5,
+  status?: Enums<"enquiry_status">
+): Promise<EnquirySummary[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("enquiries")
-    .select(ENQUIRY_COLUMNS)
-    .eq("organization_id", organizationId)
-    .order("created_at", { ascending: false })
-    .limit(limit);
+  let query = supabase.from("enquiries").select(ENQUIRY_COLUMNS).eq("organization_id", organizationId);
+  if (status) query = query.eq("status", status);
+  const { data, error } = await query.order("created_at", { ascending: false }).limit(limit);
   if (error) throw new DataLoadError("enquiries", error);
   return data.map(toEnquirySummary);
 }

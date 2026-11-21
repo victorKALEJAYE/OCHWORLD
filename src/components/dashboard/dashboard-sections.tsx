@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Heart, Inbox, MessageSquare } from "lucide-react";
+import { Heart, Inbox, MessageSquare, Plus } from "lucide-react";
+import { EnquiryStatusSelect } from "@/components/dashboard/enquiry-status-select";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { PropertyGrid } from "@/components/property/property-grid";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,7 @@ import type { Membership } from "@/lib/auth/account";
 import type { EnquirySummary, OrganizationStats } from "@/lib/dashboard/queries";
 import { formatListedDate } from "@/lib/format";
 import { ORGANIZATION_TYPE_LABELS } from "@/lib/properties/constants";
+import { cn } from "@/lib/utils";
 import type { PropertyCardData } from "@/lib/properties/types";
 
 /**
@@ -63,8 +65,29 @@ export function OrganizationPanel({
         <Stat label="New enquiries" value={stats.newEnquiries} highlight={stats.newEnquiries > 0} />
       </dl>
 
+      <div className="flex flex-wrap gap-2 border-b p-4 sm:px-6">
+        <Button asChild size="sm">
+          <Link href={`/dashboard/listings/new?org=${membership.id}`}>
+            <Plus /> Add a listing
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/dashboard/listings?org=${membership.id}`}>Manage listings</Link>
+        </Button>
+        <Button asChild size="sm" variant="ghost">
+          <Link href={`/dashboard/team?org=${membership.id}`}>Team</Link>
+        </Button>
+      </div>
+
       <div className="space-y-3 p-6">
-        <h3 className="text-base font-bold">Latest enquiries</h3>
+        <div className="flex items-center justify-between gap-4">
+          <h3 className="text-base font-bold">Latest enquiries</h3>
+          {enquiries.length > 0 && (
+            <Link href={`/dashboard/enquiries?org=${membership.id}`} className="link text-sm">
+              Open inbox
+            </Link>
+          )}
+        </div>
         {enquiries.length === 0 ? (
           <EmptyState
             icon={Inbox}
@@ -92,7 +115,18 @@ function Stat({ label, value, highlight = false }: { label: string; value: numbe
   );
 }
 
-export function EnquiryList({ enquiries, showSender = false }: { enquiries: EnquirySummary[]; showSender?: boolean }) {
+export function EnquiryList({
+  enquiries,
+  showSender = false,
+  manage = false,
+  clamp = true,
+}: {
+  enquiries: EnquirySummary[];
+  showSender?: boolean;
+  /** Show a status picker instead of a badge (organization inbox). */
+  manage?: boolean;
+  clamp?: boolean;
+}) {
   return (
     <ul className="divide-y rounded-md border">
       {enquiries.map((e) => (
@@ -101,7 +135,11 @@ export function EnquiryList({ enquiries, showSender = false }: { enquiries: Enqu
             <p className="text-sm font-semibold">
               {showSender ? e.name : (e.property?.title ?? "Listing no longer available")}
             </p>
-            <Badge variant={e.status === "new" ? "gold" : "neutral"}>{STATUS_LABELS[e.status]}</Badge>
+            {manage ? (
+              <EnquiryStatusSelect enquiryId={e.id} status={e.status} />
+            ) : (
+              <Badge variant={e.status === "new" ? "gold" : "neutral"}>{STATUS_LABELS[e.status]}</Badge>
+            )}
           </div>
           {showSender && e.property && (
             <p className="text-xs text-muted-foreground">
@@ -111,7 +149,7 @@ export function EnquiryList({ enquiries, showSender = false }: { enquiries: Enqu
               </Link>
             </p>
           )}
-          <p className="line-clamp-2 text-sm text-muted-foreground">{e.message}</p>
+          <p className={cn("whitespace-pre-line text-sm text-muted-foreground", clamp && "line-clamp-2")}>{e.message}</p>
           <p className="text-xs text-muted-foreground">
             {formatListedDate(e.createdAt).replace("Listed", "Sent")}
             {showSender && (

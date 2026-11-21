@@ -101,7 +101,7 @@ export function SignInForm({ next, initialError }: { next: string; initialError?
       <CardFooter>
         <p className="text-sm text-muted-foreground">
           New to OCHWORLD?{" "}
-          <Link href="/sign-up" className="link">
+          <Link href={next === "/dashboard" ? "/sign-up" : `/sign-up?next=${encodeURIComponent(next)}`} className="link">
             Create an account
           </Link>
         </p>

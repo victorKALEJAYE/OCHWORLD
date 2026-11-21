@@ -1,0 +1,4 @@
+# Supabase CLI settings. The CLI needs this file to recognise the project;
+# defaults are used for everything not listed. The live project is chosen by
+# `supabase link --project-ref ...` (see .github/workflows/database.yml).
+project_id = "ochworld-web"

@@ -22,7 +22,14 @@ import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { friendlyAuthError } from "@/lib/auth-errors";
 import { signUpSchema, type SignUpValues } from "@/lib/validations/auth";
 
-export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountType?: SignUpValues["accountType"] }) {
+export function SignUpForm({
+  defaultAccountType = "seeker",
+  next,
+}: {
+  defaultAccountType?: SignUpValues["accountType"];
+  /** Where to go after sign-up instead of onboarding, e.g. a team invitation. Must be a safe local path. */
+  next?: string;
+}) {
   const router = useRouter();
   const [alert, setAlert] = React.useState<AlertState>(null);
   const [sentTo, setSentTo] = React.useState<string | null>(null);
@@ -48,7 +55,7 @@ export function SignUpForm({ defaultAccountType = "seeker" }: { defaultAccountTy
 
   const password = watch("password");
   // Account type is only a starting point for onboarding; it grants nothing.
-  const onboardingPath = `/onboarding?type=${watch("accountType") === "agent" ? "agency" : "seeker"}`;
+  const onboardingPath = next ?? `/onboarding?type=${watch("accountType") === "agent" ? "agency" : "seeker"}`;
 
   async function onSubmit(values: SignUpValues) {
     setAlert(null);

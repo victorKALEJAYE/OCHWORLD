@@ -14,7 +14,10 @@ select pg_temp.check('anon sees 8 published listings', (select count(*) from pro
 select pg_temp.check('anon cannot see draft', not exists (select 1 from properties where status <> 'published'));
 select pg_temp.check('district counts total 8', (select sum(listing_count) from district_listing_counts) = 8);
 select pg_temp.check('anon sees organizations', (select count(*) from organizations) = 2);
-select pg_temp.check('anon sees no enquiries', (select count(*) from enquiries) = 0);
+do $$ declare n int; begin
+  select count(*) into n from enquiries;
+  perform pg_temp.check('anon sees no enquiries', n = 0);
+exception when insufficient_privilege then perform pg_temp.check('anon sees no enquiries', true); end $$;
 select pg_temp.check('anon sees agency phone via organization_contacts',
   (select c.phone from organization_contacts c join organizations o on o.id = c.id where o.type = 'agency') is not null);
 select pg_temp.check('anon gets no landlord phone via organization_contacts',
@@ -70,8 +73,14 @@ do $$ declare n int; begin
   update organizations set name = 'Hacked'; get diagnostics n = row_count;
   perform pg_temp.check('anon cannot update organizations', n = 0);
 exception when insufficient_privilege then perform pg_temp.check('anon cannot update organizations', true); end $$;
-with u as (update properties set price = 1 returning 1) select pg_temp.check('anon cannot update listings', (select count(*) from u) = 0);
-with u as (delete from properties returning 1) select pg_temp.check('anon cannot delete listings', (select count(*) from u) = 0);
+do $$ declare n int; begin
+  update properties set price = 1; get diagnostics n = row_count;
+  perform pg_temp.check('anon cannot update listings', n = 0);
+exception when insufficient_privilege then perform pg_temp.check('anon cannot update listings', true); end $$;
+do $$ declare n int; begin
+  delete from properties; get diagnostics n = row_count;
+  perform pg_temp.check('anon cannot delete listings', n = 0);
+exception when insufficient_privilege then perform pg_temp.check('anon cannot delete listings', true); end $$;
 reset role;
 
 -- ---------- authenticated users ----------

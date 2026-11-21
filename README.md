@@ -30,8 +30,10 @@ npm install
 3. **Authentication → URL Configuration**
    - Site URL: `http://localhost:3000`
    - Redirect URLs: add `http://localhost:3000/auth/callback` (and your live domain's `/auth/callback` later)
-4. **SQL Editor** → run the files in `supabase/migrations/` **in order** (profiles, listings, tenancy).
-   With the Supabase CLI instead: `npx supabase link` then `npx supabase db push`.
+4. **SQL Editor** → run the files in `supabase/migrations/` **in order** (profiles, listings, tenancy, explicit grants, listing management), or paste `supabase/setup-all.sql` once on a new project.
+   After that, **new migrations apply automatically**: push to `main` and the GitHub Action
+   `.github/workflows/database.yml` runs them (needs the secrets `SUPABASE_ACCESS_TOKEN`,
+   `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID`). Add a new file for each change; never edit one that has run.
 5. Make yourself super admin (SQL Editor, once you've signed up):
    ```sql
    insert into public.platform_admins (user_id, note)
@@ -78,7 +80,13 @@ Open http://localhost:3000 for the homepage, and http://localhost:3000/design-sy
 | `/auth/callback` | Finishes Google/Apple/email-link sign-in |
 | `/auth/sign-out` | POST — signs out |
 | `/onboarding` | One-time account setup after sign-up (seeker, agency, landlord, developer) |
-| `/dashboard` | Signed-in home: organization stats and enquiry inbox for members; saved homes and sent enquiries for everyone |
+| `/dashboard` | Signed-in home: organization stats and latest enquiries for members; favourites and sent enquiries for everyone |
+| `/dashboard/listings` | Organization members: all listings by status; publish, unpublish, archive, delete (owners/admins) |
+| `/dashboard/listings/new` | Add a listing (saved as a draft, then photos) |
+| `/dashboard/listings/[id]/edit` | Edit details, upload and order photos, publish |
+| `/dashboard/enquiries` | Enquiry inbox with status (new / responded / closed) |
+| `/dashboard/team` | Members, invite links (owners/admins), remove or leave |
+| `/invite/[token]` | Accept a team invitation |
 | `/design-system` | Design system reference (development only) |
 
 ## Project structure
@@ -90,7 +98,7 @@ src/
 │  │  ├─ sign-in/  sign-up/  forgot-password/  update-password/
 │  ├─ auth/callback/       # OAuth + email link handler
 │  ├─ auth/sign-out/
-│  ├─ dashboard/           # protected placeholder page
+│  ├─ dashboard/           # signed-in area: overview, listings, enquiries, team
 │  ├─ design-system/       # living design reference (dev only)
 │  ├─ error.tsx  not-found.tsx  loading.tsx
 │  ├─ globals.css          # light/dark theme tokens

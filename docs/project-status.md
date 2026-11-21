@@ -9,8 +9,8 @@ Tracks completed phases, decisions and open issues. Update at the end of each ph
 | 1. Codebase and architecture audit | Done (findings below) |
 | 2. Brand identity and design system | Done |
 | 3. Public website and property discovery | Done |
-| 4. Authentication and multi-tenant access | Done, awaiting review |
-| 5. Agent and landlord dashboards | Not started |
+| 4. Authentication and multi-tenant access | Done |
+| 5. Agent and landlord dashboards | Done, awaiting review |
 | 6. Super admin dashboard | Not started |
 | 7. Integration, testing and optimisation | Not started |
 
@@ -80,6 +80,23 @@ Resolved in Phase 4: audit issues 1 (role escalation), 2 (metadata roles), 3 (mi
 
 ## Phase 4 open items
 
-- Inviting people into an organization needs an invitation flow (email + accept link): Phase 5. Until then members can only be added by user id (owners/admins) or by SQL.
+- ~~Invitation flow~~: done in Phase 5 (invite links).
 - Users created before migration 3 have `onboarded_at` empty and will see onboarding once on next sign-in.
 - Tests: `supabase/tests/rls_tenancy.test.sql`, 49 checks, all passing alongside the 27 listings checks.
+
+## Phase 5 decisions
+
+- **Listing workflow**: details → photos → publish. New listings start as drafts; drafts and archived listings are visible only to the organization (RLS). Slugs are generated once from the title plus a random suffix and never change, so shared links keep working.
+- **Category follows property type** (apartment → residential, office → commercial, land → land) so agents choose one field, not two.
+- **Photos upload straight from the browser to Supabase Storage** at `property-images/<org>/<listing>/<random>.jpg`. The browser resizes to 2000 px and re-encodes as JPEG (saves mobile data, removes phone location data). The server action checks the path belongs to the listing before recording it. Up to 20 photos; the first is the cover.
+- **Only platform admins can feature listings** (database trigger silently keeps `is_featured` for everyone else).
+- **Deleting** is owners/admins only and removes the photo files too. Agents can unpublish or archive.
+- **Enquiry inbox** opens on "New"; status changes (new / responded / closed) save on pick.
+- **Team invitations are links, not emails**: owners/admins create a link for an email address and share it (copy or WhatsApp). The invitee must be signed in with that exact email; links work once and expire after 14 days. No email provider needed. Invited members skip onboarding.
+- Agents see teammates' names; only owners/admins see their emails (`organization_team()`).
+
+## Phase 5 open items
+
+- Run `supabase/migrations/20261121000005_listing_management.sql` in the Supabase SQL Editor (after migrations 1–4).
+- Optional later: send invitations by email (needs an email provider such as Resend), drag-to-reorder photos, listing analytics (views, enquiries per listing).
+- Tests: `supabase/tests/rls_management.test.sql`, 30 checks. All 106 database checks pass on PostgreSQL 16.
