@@ -1,4 +1,16 @@
 {
-  "hero": null,
-  "districts": {}
+  "hero": "/images/hero.jpg",
+  "districts": {
+    "central-business-district": "/images/districts/central-business-district.jpg",
+    "wuse-ii": "/images/districts/wuse-ii.jpg",
+    "utako": "/images/districts/utako.jpg",
+    "maitama": "/images/districts/maitama.jpg",
+    "asokoro": "/images/districts/asokoro.jpg",
+    "jabi": "/images/districts/jabi.jpg",
+    "gwarinpa": "/images/districts/gwarinpa.jpg",
+    "katampe": "/images/districts/katampe.jpg",
+    "guzape": "/images/districts/guzape.jpg",
+    "lokogoma": "/images/districts/lokogoma.jpg",
+    "garki": "/images/districts/garki.jpg"
+  }
 }
