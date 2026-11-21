@@ -9,3 +9,4 @@ build
 .DS_Store
 npm-debug.log*
 _to_delete/
+test-accounts.local.md

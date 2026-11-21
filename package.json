@@ -8,7 +8,9 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "samples:add": "node --env-file=.env.local scripts/sample-listings.mjs add",
-    "samples:remove": "node --env-file=.env.local scripts/sample-listings.mjs remove"
+    "samples:remove": "node --env-file=.env.local scripts/sample-listings.mjs remove",
+    "test-accounts:add": "node --env-file=.env.local scripts/test-accounts.mjs add",
+    "test-accounts:remove": "node --env-file=.env.local scripts/test-accounts.mjs remove"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
