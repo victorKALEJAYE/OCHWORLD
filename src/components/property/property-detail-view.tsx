@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, MapPin } from "lucide-react";
+import { ChevronRight, MapPin, ShieldCheck } from "lucide-react";
 import { EnquiryForm } from "@/components/property/enquiry-form";
 import { OrganizationCard } from "@/components/property/organization-card";
 import { PropertyFacts } from "@/components/property/property-facts";
@@ -115,6 +115,7 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
             </div>
           </div>
           <FavouriteButton propertyId={property.id} initialFavourite={saved} variant="full" />
+          <LegalCheckCallout slug={property.slug} listingType={property.listingType} />
           {!viewer && (
             <p className="text-center text-xs text-muted-foreground">Sign in to keep favourites and track your enquiries.</p>
           )}
@@ -133,5 +134,27 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
         </section>
       )}
     </main>
+  );
+}
+
+/** Points buyers and renters to the legal services before they pay anything. */
+function LegalCheckCallout({ slug, listingType }: { slug: string; listingType: "sale" | "rent" }) {
+  const isSale = listingType === "sale";
+  const service = isSale ? "title_verification" : "agreement_review";
+  return (
+    <div className="flex gap-3 rounded-lg border bg-surface p-5">
+      <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
+      <div className="space-y-1.5">
+        <p className="font-semibold">{isSale ? "Verify the title before you pay" : "Check the agreement before you sign"}</p>
+        <p className="text-sm text-muted-foreground">
+          {isSale
+            ? "A property lawyer can search AGIS and check the C of O and survey for this property."
+            : "A property lawyer can review the tenancy agreement and the landlord's right to let."}
+        </p>
+        <Link href={`/legal-services?property=${slug}&service=${service}#request`} className="link inline-block text-sm">
+          {isSale ? "Request a title check" : "Request an agreement review"}
+        </Link>
+      </div>
+    </div>
   );
 }

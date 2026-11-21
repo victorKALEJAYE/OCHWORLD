@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, Heart, Inbox, LayoutDashboard, LogOut, MessageSquare, Plus, UserCog, Users } from "lucide-react";
+import { Building2, Heart, Inbox, LayoutDashboard, LogOut, MessageSquare, Plus, Scale, UserCog, Users } from "lucide-react";
 import type { HeaderAccount } from "@/lib/auth/account";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,7 @@ export function accountMenuGroups(account: HeaderAccount): { title?: string; lin
       { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
       { href: "/dashboard#favourites", label: "Favourites", icon: Heart },
       { href: "/dashboard#enquiries", label: "Enquiries you sent", icon: MessageSquare },
+      { href: "/dashboard#legal", label: "Legal requests", icon: Scale },
     ],
   });
   if (account.organizations.length > 0) {

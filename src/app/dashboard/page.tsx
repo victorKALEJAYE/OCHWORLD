@@ -2,13 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
-import { OrganizationPanel, SavedHomesPanel, SentEnquiriesPanel } from "@/components/dashboard/dashboard-sections";
+import {
+  LegalRequestsPanel,
+  OrganizationPanel,
+  SavedHomesPanel,
+  SentEnquiriesPanel,
+} from "@/components/dashboard/dashboard-sections";
 import { ErrorState } from "@/components/feedback/error-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requireOnboardedAccount } from "@/lib/auth/account";
 import { getOrganizationStats, getSavedProperties } from "@/lib/dashboard/queries";
 import { getOrganizationEnquiries, getSentEnquiries } from "@/lib/enquiries/queries";
+import { getMyLegalRequests } from "@/lib/legal/queries";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -32,6 +38,11 @@ export default async function DashboardPage() {
     ),
     getSavedProperties(),
     getSentEnquiries(account.userId),
+    // A missing legal_requests table (migration 7 not yet applied) mustn't break the dashboard.
+    getMyLegalRequests(account.userId).catch((error) => {
+      console.error(error);
+      return [];
+    }),
   ]).catch((error) => {
     console.error(error);
     return null;
@@ -68,6 +79,7 @@ export default async function DashboardPage() {
           ))}
           <SavedHomesPanel properties={data[1]} />
           <SentEnquiriesPanel enquiries={data[2]} />
+          <LegalRequestsPanel requests={data[3]} />
         </>
       )}
     </>

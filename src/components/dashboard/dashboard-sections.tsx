@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import type { Membership } from "@/lib/auth/account";
 import type { OrganizationStats } from "@/lib/dashboard/queries";
 import type { EnquirySummary } from "@/lib/enquiries/queries";
+import { LEGAL_SERVICE_LABELS, LEGAL_STATUS_LABELS } from "@/lib/legal/constants";
+import type { LegalRequestSummary } from "@/lib/legal/queries";
 import { formatListedDate } from "@/lib/format";
 import { ORGANIZATION_TYPE_LABELS } from "@/lib/properties/constants";
 import { cn } from "@/lib/utils";
@@ -223,6 +225,47 @@ export function SentEnquiriesPanel({ enquiries }: { enquiries: EnquirySummary[] 
           className="bg-background"
         />
       )}
+    </DashboardSection>
+  );
+}
+
+const legalDate = new Intl.DateTimeFormat("en-NG", { day: "numeric", month: "short", year: "numeric" });
+
+/** The user's own property legal requests, with their progress. Hidden until they've sent one. */
+export function LegalRequestsPanel({ requests }: { requests: LegalRequestSummary[] }) {
+  if (requests.length === 0) return null;
+  return (
+    <DashboardSection
+      id="legal"
+      title="Legal requests"
+      action={
+        <Link href="/legal-services#request" className="link text-sm">
+          New request
+        </Link>
+      }
+    >
+      <ul className="divide-y rounded-md border bg-background">
+        {requests.map((r) => (
+          <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div className="min-w-0 space-y-0.5">
+              <p className="text-sm font-semibold">{LEGAL_SERVICE_LABELS[r.service]}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {r.property ? (
+                  <Link href={`/properties/${r.property.slug}`} className="link">
+                    {r.property.title}
+                  </Link>
+                ) : (
+                  r.propertyDetails
+                )}
+                {" · "}Sent {legalDate.format(new Date(r.createdAt))}
+              </p>
+            </div>
+            <Badge variant={r.status === "completed" ? "success" : r.status === "new" ? "gold" : "neutral"}>
+              {LEGAL_STATUS_LABELS[r.status]}
+            </Badge>
+          </li>
+        ))}
+      </ul>
     </DashboardSection>
   );
 }

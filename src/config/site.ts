@@ -22,4 +22,5 @@ export const mainNav: NavItem[] = [
   { label: "Commercial", href: "/properties?category=commercial" },
   { label: "Explore Abuja", href: "/areas" },
   { label: "Agents", href: "/agents" },
+  { label: "Legal services", href: "/legal-services" },
 ];

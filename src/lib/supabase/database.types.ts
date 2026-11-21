@@ -27,6 +27,16 @@ type PropertyType =
 type RentPeriod = "year" | "month";
 type OrgRole = "owner" | "admin" | "agent";
 type EnquiryStatus = "new" | "responded" | "closed";
+type LegalService = "title_verification" | "survey_verification" | "agreement_review" | "transfer_consent" | "due_diligence";
+type LegalRequestStatus = "new" | "in_progress" | "completed" | "closed";
+type DistrictRatingCategory =
+  | "security"
+  | "road_access"
+  | "electricity"
+  | "infrastructure"
+  | "lifestyle"
+  | "flood_safety"
+  | "traffic_flow";
 
 export type Database = {
   public: {
@@ -255,6 +265,64 @@ export type Database = {
         Update: Record<string, never>;
         Relationships: [];
       };
+      legal_requests: {
+        Row: {
+          id: string;
+          service: LegalService;
+          property_id: string | null;
+          property_details: string | null;
+          name: string;
+          email: string;
+          phone: string;
+          message: string | null;
+          status: LegalRequestStatus;
+          requester_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        /** Only these columns are insertable; requester and status are set by the database. */
+        Insert: {
+          service: LegalService;
+          property_id?: string | null;
+          property_details?: string | null;
+          name: string;
+          email: string;
+          phone: string;
+          message?: string | null;
+        };
+        /** Platform admins only (RLS + column grant). */
+        Update: { status?: LegalRequestStatus };
+        Relationships: [
+          {
+            foreignKeyName: "legal_requests_property_id_fkey";
+            columns: ["property_id"];
+            isOneToOne: false;
+            referencedRelation: "properties";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      district_ratings: {
+        Row: {
+          district_id: number;
+          category: DistrictRatingCategory;
+          score: number;
+          note: string | null;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: { district_id: number; category: DistrictRatingCategory; score: number; note?: string | null };
+        Update: { score?: number; note?: string | null };
+        Relationships: [
+          {
+            foreignKeyName: "district_ratings_district_id_fkey";
+            columns: ["district_id"];
+            isOneToOne: false;
+            referencedRelation: "districts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       saved_properties: {
         Row: { user_id: string; property_id: string; created_at: string };
         Insert: { property_id: string; user_id?: string };
@@ -318,6 +386,9 @@ export type Database = {
       rent_period: RentPeriod;
       org_role: OrgRole;
       enquiry_status: EnquiryStatus;
+      legal_service: LegalService;
+      legal_request_status: LegalRequestStatus;
+      district_rating_category: DistrictRatingCategory;
     };
     CompositeTypes: Record<string, never>;
   };

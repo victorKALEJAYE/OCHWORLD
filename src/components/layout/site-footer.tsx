@@ -11,6 +11,7 @@ const columns = [
       { label: "Commercial", href: "/properties?category=commercial" },
       { label: "Land", href: "/properties?category=land" },
       { label: "Explore Abuja", href: "/areas" },
+      { label: "Property legal services", href: "/legal-services" },
     ],
   },
   {
