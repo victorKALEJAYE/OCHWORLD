@@ -22,16 +22,18 @@ const ROLE_LABELS: Record<Membership["role"], string> = { owner: "Owner", admin:
 const STATUS_LABELS: Record<EnquirySummary["status"], string> = { new: "New", responded: "Responded", closed: "Closed" };
 
 export function DashboardSection({
+  id,
   title,
   action,
   children,
 }: {
+  id?: string;
   title: string;
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-4">
+    <section id={id} className="scroll-mt-24 space-y-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-xl font-bold">{title}</h2>
         {action}
@@ -179,6 +181,7 @@ export function EnquiryList({
 export function SavedHomesPanel({ properties }: { properties: PropertyCardData[] }) {
   return (
     <DashboardSection
+      id="favourites"
       title="Favourites"
       action={
         <Link href="/properties" className="link text-sm">
@@ -207,7 +210,7 @@ export function SavedHomesPanel({ properties }: { properties: PropertyCardData[]
 
 export function SentEnquiriesPanel({ enquiries }: { enquiries: EnquirySummary[] }) {
   return (
-    <DashboardSection title="Your enquiries">
+    <DashboardSection id="enquiries" title="Enquiries you sent">
       {enquiries.length > 0 ? (
         <div className="bg-background">
           <EnquiryList enquiries={enquiries} />

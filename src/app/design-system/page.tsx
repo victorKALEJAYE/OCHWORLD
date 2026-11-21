@@ -6,7 +6,7 @@ import { BrandLoader } from "@/components/brand/brand-loader";
 import { DisplayHeading } from "@/components/brand/display-heading";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
-import { SiteHeader } from "@/components/layout/site-header";
+import { SiteHeaderView } from "@/components/layout/site-header";
 import { FavouriteButton } from "@/components/property/favourite-button";
 import { PropertyCard } from "@/components/property/property-card";
 import { PropertyCardSkeleton } from "@/components/property/property-card-skeleton";
@@ -214,10 +214,10 @@ export default function DesignSystemPage() {
 
         <Section title="Navigation" note="Same header, two tones. Links go to Phase 3 pages.">
           <div className="space-y-4 overflow-hidden rounded-lg border">
-            <SiteHeader className="static" />
+            <SiteHeaderView className="static" account={null} />
           </div>
           <div className="mt-4 overflow-hidden rounded-lg border">
-            <SiteHeader tone="dark" className="static" />
+            <SiteHeaderView tone="dark" className="static" account={null} />
           </div>
         </Section>
 

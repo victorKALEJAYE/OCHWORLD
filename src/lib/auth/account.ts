@@ -65,3 +65,41 @@ export async function requireOnboardedAccount(returnTo: string): Promise<Account
   if (!account.onboarded) redirect("/onboarding");
   return account;
 }
+
+/** What the site header needs to show a signed-in user. */
+export type HeaderAccount = {
+  name: string;
+  email?: string;
+  initials: string;
+  onboarded: boolean;
+  isPlatformAdmin: boolean;
+  /** Organizations the user works in (agency, landlord, developer). */
+  organizations: { id: string; name: string; role: Membership["role"] }[];
+};
+
+/** "Adaeze Okafor" → "AO"; falls back to the email's first letter. */
+export function initialsFor(name?: string, email?: string) {
+  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
+  const letters = parts.length >= 2 ? parts[0][0] + parts[parts.length - 1][0] : (parts[0]?.[0] ?? email?.[0] ?? "?");
+  return letters.toUpperCase();
+}
+
+/** The header's view of the signed-in user, or null for guests. Never throws: a failure just shows the guest header. */
+export async function getHeaderAccount(): Promise<HeaderAccount | null> {
+  try {
+    const account = await getAccount();
+    if (!account) return null;
+    const name = account.name || account.email?.split("@")[0] || "Your account";
+    return {
+      name,
+      email: account.email,
+      initials: initialsFor(account.name, account.email),
+      onboarded: account.onboarded,
+      isPlatformAdmin: account.isPlatformAdmin,
+      organizations: account.memberships.map((m) => ({ id: m.id, name: m.name, role: m.role })),
+    };
+  } catch (error) {
+    console.error("getHeaderAccount failed", error);
+    return null;
+  }
+}

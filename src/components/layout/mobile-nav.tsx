@@ -8,8 +8,21 @@ import { Button } from "@/components/ui/button";
 import type { NavItem } from "@/config/site";
 import { cn } from "@/lib/utils";
 
-/** Collapsible menu for small screens. Closes on navigation and on Escape. */
-export function MobileNav({ items, className }: { items: NavItem[]; className?: string }) {
+/**
+ * Collapsible menu for small screens. Closes on navigation and on Escape.
+ * Signed-in users reach their account links through the avatar beside it.
+ */
+export function MobileNav({
+  items,
+  className,
+  signedIn = false,
+  listHref = "/list-property",
+}: {
+  items: NavItem[];
+  className?: string;
+  signedIn?: boolean;
+  listHref?: string;
+}) {
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const panelId = React.useId();
@@ -52,12 +65,14 @@ export function MobileNav({ items, className }: { items: NavItem[]; className?: 
             ))}
           </ul>
         </nav>
-        <div className={cn("mt-5 grid grid-cols-2 gap-3")}>
-          <Button asChild variant="outline">
-            <Link href="/sign-in">Sign in</Link>
-          </Button>
+        <div className={cn("mt-5 grid gap-3", signedIn ? "grid-cols-1" : "grid-cols-2")}>
+          {!signedIn && (
+            <Button asChild variant="outline">
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          )}
           <Button asChild variant="primary">
-            <Link href="/list-property">List a property</Link>
+            <Link href={listHref}>{listHref === "/list-property" ? "List a property" : "Add a listing"}</Link>
           </Button>
         </div>
       </div>
