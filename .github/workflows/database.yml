@@ -38,9 +38,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # A fixed version: "latest" makes the action ask GitHub's API for the
+      # newest release, which hits GitHub's rate limit. Bump this occasionally.
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 2.115.0
 
       - name: Check the secrets are set
         run: |
