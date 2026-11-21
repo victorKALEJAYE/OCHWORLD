@@ -19,6 +19,7 @@ export function FilterBar({ filters, districts }: { filters: PropertyFilters; di
     <form action="/properties" method="get" role="search" aria-label="Filter properties">
       {/* agency filter is set from agent pages; keep it while refining other filters */}
       {filters.agency && <input type="hidden" name="agency" value={filters.agency} />}
+      {filters.q && <input type="hidden" name="q" value={filters.q} />}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <ListingTypeToggle includeAll defaultValue={filters.listing} />

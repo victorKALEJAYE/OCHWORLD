@@ -31,6 +31,10 @@ export function describeSearch(filters: PropertyFilters, districts: DistrictSumm
           : "Property";
 
   const listing = filters.listing === "sale" ? " for sale" : filters.listing === "rent" ? " to rent" : "";
-  const place = districts.find((d) => d.slug === filters.district)?.name ?? "Abuja";
-  return `${noun}${listing} in ${place}`;
+  const typedDistrict = filters.q
+    ? districts.find((d) => d.name.toLowerCase() === filters.q!.toLowerCase().trim())
+    : undefined;
+  const place = districts.find((d) => d.slug === filters.district)?.name ?? typedDistrict?.name;
+  if (!place && filters.q) return `${noun}${listing} matching “${filters.q}”`;
+  return `${noun}${listing} in ${place ?? "Abuja"}`;
 }

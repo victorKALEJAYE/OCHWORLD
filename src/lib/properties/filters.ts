@@ -10,6 +10,8 @@ import type { ListingType, PropertyCategory, PropertyType } from "@/lib/properti
  * whole page, because URLs get edited by hand and shared in chats.
  */
 export type PropertyFilters = {
+  /** Free text from the homepage search box: a district name, estate or street. */
+  q?: string;
   listing?: ListingType;
   category?: PropertyCategory;
   type?: PropertyType;
@@ -28,6 +30,7 @@ const slug = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(80);
 const amount = z.coerce.number().int().positive().max(100_000_000_000);
 
 const fields = {
+  q: z.string().trim().min(2).max(80),
   listing: z.enum(["sale", "rent"]),
   category: z.enum(["residential", "commercial", "land"]),
   type: z.enum(propertyTypes),
@@ -51,6 +54,7 @@ function pick<T>(schema: z.ZodType<T>, value: string | string[] | undefined): T 
 
 export function parsePropertyFilters(params: RawParams): PropertyFilters {
   const filters: PropertyFilters = {
+    q: pick(fields.q, params.q),
     listing: pick(fields.listing, params.listing),
     category: pick(fields.category, params.category),
     type: pick(fields.type, params.type),
@@ -85,5 +89,19 @@ export function propertiesHref(filters: Partial<PropertyFilters>) {
 
 /** True when any filter that narrows results is set (used for empty states). */
 export function hasActiveFilters(f: PropertyFilters) {
-  return Boolean(f.listing || f.category || f.type || f.district || f.agency || f.minPrice || f.maxPrice || f.beds);
+  return Boolean(f.q || f.listing || f.category || f.type || f.district || f.agency || f.minPrice || f.maxPrice || f.beds);
+}
+
+/** "Wuse 2" → "wuse-2". Used to match typed text to a district slug. */
+export function slugifyText(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Characters that would break a PostgREST filter are removed; the rest is matched literally. */
+export function sanitizeSearchText(value: string) {
+  return value.replace(/[^\p{L}\p{N}\s'.-]/gu, " ").replace(/\s+/g, " ").trim();
 }

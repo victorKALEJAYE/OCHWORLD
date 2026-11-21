@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { PAGE_SIZE } from "@/lib/properties/constants";
-import type { PropertyFilters } from "@/lib/properties/filters";
+import { sanitizeSearchText, slugifyText, type PropertyFilters } from "@/lib/properties/filters";
 import {
   CARD_COLUMNS,
   DETAIL_COLUMNS,
@@ -73,9 +73,18 @@ export async function searchProperties(filters: PropertyFilters): Promise<Search
   const supabase = await createClient();
   const empty: SearchResult = { items: [], total: 0, page: filters.page, pageCount: 0 };
 
+  // Free text that names a district ("Maitama", "wuse ii") searches that district.
+  let textSearch: string | undefined;
+  let districtSlug = filters.district;
+  if (filters.q) {
+    const asDistrict = districtSlug ? null : await idForSlug("districts", districtSlugFor(filters.q));
+    if (asDistrict) districtSlug = districtSlugFor(filters.q);
+    else textSearch = sanitizeSearchText(filters.q) || undefined;
+  }
+
   // Filters arrive as slugs (readable URLs); the table stores ids.
   const [districtId, organizationId] = await Promise.all([
-    filters.district ? idForSlug("districts", filters.district) : undefined,
+    districtSlug ? idForSlug("districts", districtSlug) : undefined,
     filters.agency ? idForSlug("organizations", filters.agency) : undefined,
   ]);
   if (districtId === null || organizationId === null) return empty; // unknown slug: nothing matches
@@ -90,6 +99,11 @@ export async function searchProperties(filters: PropertyFilters): Promise<Search
   if (filters.minPrice) query = query.gte("price", filters.minPrice);
   if (filters.maxPrice) query = query.lte("price", filters.maxPrice);
   if (filters.beds) query = query.gte("bedrooms", filters.beds);
+  if (textSearch) {
+    // Quoted values so spaces and full stops in the text can't change the filter's meaning.
+    const like = `"%${textSearch}%"`;
+    query = query.or(`title.ilike.${like},address.ilike.${like},description.ilike.${like}`);
+  }
 
   query =
     filters.sort === "price_asc"
@@ -203,4 +217,18 @@ async function idForSlug(table: "districts" | "organizations", slug: string): Pr
       : await supabase.from("organizations").select("id").eq("slug", slug).maybeSingle();
   if (error) throw new DataLoadError(table, error);
   return data?.id ?? null;
+}
+
+/** Typed district names to slugs, allowing common spellings ("Wuse 2", "CBD"). */
+function districtSlugFor(text: string) {
+  const slug = slugifyText(text);
+  const aliases: Record<string, string> = {
+    "wuse-2": "wuse-ii",
+    "wuse-zone": "wuse",
+    cbd: "central-business-district",
+    "central-area": "central-business-district",
+    "apo-dutse": "apo",
+    lifecamp: "life-camp",
+  };
+  return aliases[slug] ?? slug;
 }

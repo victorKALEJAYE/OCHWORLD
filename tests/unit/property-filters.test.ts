@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { hasActiveFilters, parsePropertyFilters, propertiesHref } from "@/lib/properties/filters";
+import { hasActiveFilters, parsePropertyFilters, propertiesHref, sanitizeSearchText, slugifyText } from "@/lib/properties/filters";
 
 describe("parsePropertyFilters", () => {
   it("defaults to newest, page 1, no filters", () => {
@@ -54,5 +54,28 @@ describe("propertiesHref", () => {
       { listing: f.listing, district: f.district, beds: f.beds, sort: f.sort, page: f.page },
       { listing: "sale", district: "maitama", beds: 4, sort: "price_asc", page: 3 }
     );
+  });
+});
+
+describe("keyword search", () => {
+  it("reads the homepage search text", () => {
+    const f = parsePropertyFilters({ q: "  Gwarinpa 6th Avenue ", listing: "rent" });
+    assert.equal(f.q, "Gwarinpa 6th Avenue");
+    assert.equal(hasActiveFilters(f), true);
+  });
+
+  it("ignores one-letter or empty text", () => {
+    assert.equal(parsePropertyFilters({ q: "a" }).q, undefined);
+    assert.equal(parsePropertyFilters({ q: "" }).q, undefined);
+  });
+
+  it("matches typed district names to slugs", () => {
+    assert.equal(slugifyText("Wuse II"), "wuse-ii");
+    assert.equal(slugifyText(" Central Business District "), "central-business-district");
+  });
+
+  it("strips characters that could change the database filter", () => {
+    assert.equal(sanitizeSearchText('Maitama),title.eq.x"%*'), "Maitama title.eq.x"); // harmless: searched literally inside quotes
+    assert.equal(sanitizeSearchText("No. 5, Aso Drive"), "No. 5 Aso Drive");
   });
 });

@@ -5,6 +5,8 @@
  *
  *   npm run photos:site        homepage hero + district photos → public/images/
  *                              (commit and push these; no keys needed)
+ *   npm run media:hero -- <file>        use your own photo (e.g. the City Gate) as the homepage hero
+ *   npm run media:hero-video -- <file>  add a background video (MP4) behind the homepage hero
  *   npm run photos:samples     photos for the 10 sample listings → Supabase Storage
  *                              (needs SUPABASE_SECRET_KEY in .env.local; skips
  *                              listings that already have photos, unless --replace)
@@ -13,7 +15,8 @@
  * district. Replace any of them with your own photo of the area: put a JPG at
  * public/images/districts/<district-slug>.jpg (the file names stay the same).
  */
-import { mkdirSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { randomUUID } from "node:crypto";
 
 const UA = "OCHWORLD-setup-script/1.0";
@@ -185,10 +188,56 @@ async function samplePhotos() {
   console.log(`\n✔ Added ${added} photos. Refresh the site to see them.`);
 }
 
+
+// ---------------------------------------------------------------------------
+// Your own hero photo / video
+// ---------------------------------------------------------------------------
+
+const MANIFEST = "src/config/photos.generated.json";
+
+function readManifest() {
+  try {
+    return JSON.parse(readFileSync(MANIFEST, "utf8"));
+  } catch {
+    return { hero: null, districts: {} };
+  }
+}
+
+function useOwnMedia(kind, file) {
+  if (!file || !existsSync(file)) {
+    console.error(`✖ File not found: ${file ?? "(none)"}\n  Example: npm run media:${kind === "video" ? "hero-video" : "hero"} -- "C:\\Users\\you\\Videos\\city-gate.${kind === "video" ? "mp4" : "jpg"}"`);
+    process.exit(1);
+  }
+  const ext = path.extname(file).toLowerCase();
+  const allowed = kind === "video" ? [".mp4", ".webm"] : [".jpg", ".jpeg", ".png", ".webp"];
+  if (!allowed.includes(ext)) {
+    console.error(`✖ Use a ${allowed.join(", ")} file.`);
+    process.exit(1);
+  }
+  const mb = statSync(file).size / 1024 / 1024;
+  const limit = kind === "video" ? 12 : 4;
+  if (mb > limit) {
+    console.error(`✖ ${mb.toFixed(1)} MB is too heavy for visitors on mobile data (keep it under ${limit} MB).`);
+    console.error(kind === "video" ? "  Trim it to 10-20 seconds, 1280x720, no sound, then try again." : "  Resize it to about 2000 px wide, then try again.");
+    process.exit(1);
+  }
+  const folder = kind === "video" ? "public/videos" : "public/images";
+  mkdirSync(folder, { recursive: true });
+  const name = kind === "video" ? `hero${ext}` : `hero${ext === ".jpeg" ? ".jpg" : ext}`;
+  copyFileSync(file, path.join(folder, name));
+  const manifest = readManifest();
+  if (kind === "video") manifest.heroVideo = `/videos/${name}`;
+  else manifest.hero = `/images/${name}`;
+  writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + "\n");
+  console.log(`✔ Homepage hero ${kind} set (${mb.toFixed(1)} MB). Check it with npm run dev, then commit and push.`);
+}
+
 const mode = process.argv[2];
 if (mode === "site") await sitePhotos();
 else if (mode === "samples") await samplePhotos();
+else if (mode === "hero") useOwnMedia("photo", process.argv[3]);
+else if (mode === "hero-video") useOwnMedia("video", process.argv[3]);
 else {
-  console.error("Usage: node scripts/photos.mjs site|samples [--replace] [--production]");
+  console.error("Usage: node scripts/photos.mjs site|samples|hero <file>|hero-video <file> [--replace] [--production]");
   process.exit(1);
 }

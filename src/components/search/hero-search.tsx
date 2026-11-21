@@ -1,76 +1,60 @@
 import { Search } from "lucide-react";
-import { ListingTypeToggle } from "@/components/search/listing-type-toggle";
-import { PriceOptions } from "@/components/search/price-options";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
-import { PROPERTY_TYPE_LABELS } from "@/lib/properties/constants";
 import type { DistrictSummary } from "@/lib/properties/types";
+import { cn } from "@/lib/utils";
+
+const TABS = [
+  { value: "", label: "All" },
+  { value: "sale", label: "Buy" },
+  { value: "rent", label: "Rent" },
+];
 
 /**
- * Homepage search. A plain GET form to /properties: works without JavaScript,
- * and the resulting URL is shareable.
+ * Homepage search, Zillow-style: one big box. A plain GET form to
+ * /properties?q=…&listing=…, so it works without JavaScript and the URL can be
+ * shared. Typing a district name suggests it (native <datalist>); any other
+ * text searches listing titles and addresses.
  */
-export function HeroSearch({ districts }: { districts: DistrictSummary[] }) {
+export function HeroSearch({ districts, className }: { districts: DistrictSummary[]; className?: string }) {
   return (
-    <form action="/properties" method="get" role="search" className="rounded-lg border bg-card p-5 sm:p-6">
-      <ListingTypeToggle className="mb-5" />
+    <form action="/properties" method="get" role="search" aria-label="Search properties" className={cn("w-full max-w-2xl", className)}>
+      <fieldset className="mb-3 inline-flex rounded-full bg-white/15 p-1 backdrop-blur-sm">
+        <legend className="sr-only">Buy or rent</legend>
+        {TABS.map((t) => (
+          <label
+            key={t.label}
+            className="cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold text-white transition-colors has-[:checked]:bg-white has-[:checked]:text-black has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary"
+          >
+            <input type="radio" name="listing" value={t.value} defaultChecked={t.value === ""} className="sr-only" />
+            {t.label}
+          </label>
+        ))}
+      </fieldset>
 
-      <div className="grid gap-4 md:grid-cols-[1.6fr_1fr_1fr_1fr_auto] md:items-end">
-        <Field id="hero-district" label="Location">
-          <Select id="hero-district" name="district" defaultValue="">
-            <option value="">All of Abuja</option>
-            {districts.map((d) => (
-              <option key={d.slug} value={d.slug}>
-                {d.name}
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        <Field id="hero-type" label="Property type">
-          <Select id="hero-type" name="type" defaultValue="">
-            <option value="">Any type</option>
-            {Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        <Field id="hero-price" label="Max price">
-          <Select id="hero-price" name="maxPrice" defaultValue="">
-            <PriceOptions />
-          </Select>
-        </Field>
-
-        <Field id="hero-beds" label="Bedrooms">
-          <Select id="hero-beds" name="beds" defaultValue="">
-            <option value="">Any</option>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <option key={n} value={n}>
-                {n}+
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        <Button type="submit" size="lg" className="h-11 w-full md:w-auto">
-          <Search /> Search
-        </Button>
+      <div className="flex h-16 items-center rounded-lg bg-white pl-5 pr-2 text-black shadow-elevated focus-within:ring-2 focus-within:ring-primary">
+        <label htmlFor="hero-q" className="sr-only">
+          District, estate or street
+        </label>
+        <input
+          id="hero-q"
+          name="q"
+          list="hero-districts"
+          autoComplete="off"
+          placeholder="Enter a district, estate or street"
+          className="h-full min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-neutral-500 sm:text-lg"
+        />
+        <datalist id="hero-districts">
+          {districts.map((d) => (
+            <option key={d.slug} value={d.name} />
+          ))}
+        </datalist>
+        <button
+          type="submit"
+          aria-label="Search"
+          className="grid size-12 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          <Search className="size-5" aria-hidden="true" />
+        </button>
       </div>
     </form>
-  );
-}
-
-function Field({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="eyebrow">
-        {label}
-      </Label>
-      {children}
-    </div>
   );
 }

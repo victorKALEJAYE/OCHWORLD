@@ -19,7 +19,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <SiteHeader tone="dark" />
+      <SiteHeader />
       <main>
         <HomeHero districts={districts} />
         <Suspense fallback={<FeaturedPropertiesSkeleton />}>

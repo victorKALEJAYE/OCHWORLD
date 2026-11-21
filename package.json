@@ -17,7 +17,9 @@
     "test-accounts:add": "node --env-file=.env.local scripts/test-accounts.mjs add",
     "test-accounts:remove": "node --env-file=.env.local scripts/test-accounts.mjs remove",
     "photos:site": "node scripts/photos.mjs site",
-    "photos:samples": "node --env-file=.env.local scripts/photos.mjs samples"
+    "photos:samples": "node --env-file=.env.local scripts/photos.mjs samples",
+    "media:hero": "node scripts/photos.mjs hero",
+    "media:hero-video": "node scripts/photos.mjs hero-video"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

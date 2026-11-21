@@ -1,14 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building, Home, KeyRound, LandPlot, MapPin } from "lucide-react";
-import { DisplayHeading } from "@/components/brand/display-heading";
 import { HeroSearch } from "@/components/search/hero-search";
 import { Button } from "@/components/ui/button";
-import { districtPhoto, heroPhoto } from "@/config/photos";
+import { districtPhoto, heroPhoto, heroVideo } from "@/config/photos";
 import { pluralize } from "@/lib/format";
 import { propertiesHref } from "@/lib/properties/filters";
 import type { DistrictSummary } from "@/lib/properties/types";
-import { cn } from "@/lib/utils";
 
 /**
  * Presentational homepage sections. Data is fetched by the page and passed in,
@@ -17,23 +15,36 @@ import { cn } from "@/lib/utils";
 
 export function HomeHero({ districts }: { districts: DistrictSummary[] }) {
   return (
-    <section className="dark relative overflow-hidden bg-background text-foreground">
-      {heroPhoto && (
-        <>
-          <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="object-cover" />
-          {/* Solid tint (no gradient) keeps the headline readable on any photo. */}
-          <div aria-hidden="true" className="absolute inset-0 bg-black/70" />
-        </>
+    <section className="relative isolate flex min-h-[520px] items-center overflow-hidden bg-black text-white sm:min-h-[600px]">
+      {heroPhoto && <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="-z-20 object-cover" />}
+      {heroVideo && (
+        // Muted, looping background video; the photo underneath shows while it loads,
+        // and instead of it for people who prefer reduced motion.
+        <video
+          className="absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden"
+          src={heroVideo}
+          poster={heroPhoto ?? undefined}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+        />
       )}
-      <div className="relative mx-auto max-w-content px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-20">
-        <p className="eyebrow">Abuja property marketplace</p>
-        <DisplayHeading lead="Find your place" accent="in Abuja." size="xl" className="mt-6" />
-        <p className={cn("mt-8 max-w-xl text-lg", heroPhoto ? "text-white/85" : "text-muted-foreground")}>
-          Homes, apartments, offices and land for sale and rent across the Federal Capital Territory.
+      {/* Light, even tint (no gradient) so the photo stays visible and white text stays readable. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/45" />
+
+      <div className="mx-auto w-full max-w-content px-4 py-16 sm:px-6">
+        <h1 className="max-w-3xl font-display text-[2.75rem] font-extrabold leading-[1.02] tracking-tight sm:text-7xl">
+          Buy. Rent. Invest.
+          <br />
+          In Abuja<span className="text-primary">.</span>
+        </h1>
+        <p className="mt-5 max-w-xl text-lg text-white/85">
+          Homes, apartments, offices and land across the Federal Capital Territory.
         </p>
-        <div className="mt-10">
-          <HeroSearch districts={districts} />
-        </div>
+        <HeroSearch districts={districts} className="mt-8" />
       </div>
     </section>
   );
