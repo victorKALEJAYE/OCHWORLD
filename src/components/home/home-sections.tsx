@@ -1,11 +1,14 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Building, Home, KeyRound, LandPlot } from "lucide-react";
+import { ArrowRight, Building, Home, KeyRound, LandPlot, MapPin } from "lucide-react";
 import { DisplayHeading } from "@/components/brand/display-heading";
 import { HeroSearch } from "@/components/search/hero-search";
 import { Button } from "@/components/ui/button";
+import { districtPhoto, heroPhoto } from "@/config/photos";
 import { pluralize } from "@/lib/format";
 import { propertiesHref } from "@/lib/properties/filters";
 import type { DistrictSummary } from "@/lib/properties/types";
+import { cn } from "@/lib/utils";
 
 /**
  * Presentational homepage sections. Data is fetched by the page and passed in,
@@ -14,11 +17,18 @@ import type { DistrictSummary } from "@/lib/properties/types";
 
 export function HomeHero({ districts }: { districts: DistrictSummary[] }) {
   return (
-    <section className="dark bg-background text-foreground">
-      <div className="mx-auto max-w-content px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-20">
+    <section className="dark relative overflow-hidden bg-background text-foreground">
+      {heroPhoto && (
+        <>
+          <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="object-cover" />
+          {/* Solid tint (no gradient) keeps the headline readable on any photo. */}
+          <div aria-hidden="true" className="absolute inset-0 bg-black/70" />
+        </>
+      )}
+      <div className="relative mx-auto max-w-content px-4 pb-16 pt-14 sm:px-6 sm:pb-24 sm:pt-20">
         <p className="eyebrow">Abuja property marketplace</p>
         <DisplayHeading lead="Find your place" accent="in Abuja." size="xl" className="mt-6" />
-        <p className="mt-8 max-w-xl text-lg text-muted-foreground">
+        <p className={cn("mt-8 max-w-xl text-lg", heroPhoto ? "text-white/85" : "text-muted-foreground")}>
           Homes, apartments, offices and land for sale and rent across the Federal Capital Territory.
         </p>
         <div className="mt-10">
@@ -99,18 +109,34 @@ export function PopularDistricts({ districts }: { districts: DistrictSummary[] }
     <section className="border-y bg-surface">
       <div className="mx-auto max-w-content px-4 py-16 sm:px-6">
         <SectionHeader title="Popular areas" href="/areas" linkLabel="Explore all of Abuja" />
-        <ul className="flex flex-wrap gap-3">
-          {popular.map((d) => (
-            <li key={d.slug}>
-              <Link
-                href={propertiesHref({ district: d.slug })}
-                className="inline-flex items-center gap-2 rounded-full border bg-background px-4 py-2 text-sm font-medium transition-colors hover:border-foreground"
-              >
-                {d.name}
-                <span className="text-muted-foreground">{pluralize(d.listingCount, "listing")}</span>
-              </Link>
-            </li>
-          ))}
+        <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {popular.map((d) => {
+            const photo = districtPhoto(d.slug);
+            return (
+              <li key={d.slug}>
+                <Link
+                  href={propertiesHref({ district: d.slug })}
+                  className="group relative block aspect-[4/3] overflow-hidden rounded-lg border bg-muted shadow-card"
+                >
+                  {photo ? (
+                    <Image
+                      src={photo}
+                      alt=""
+                      fill
+                      sizes="(min-width: 1024px) 25vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <MapPin className="absolute left-1/2 top-[38%] size-6 -translate-x-1/2 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                  )}
+                  <span className="absolute inset-x-0 bottom-0 bg-black/60 px-3 py-2.5 text-white">
+                    <span className="block font-semibold leading-tight">{d.name}</span>
+                    <span className="block text-xs text-white/80">{pluralize(d.listingCount, "listing")}</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>

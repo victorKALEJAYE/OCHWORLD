@@ -15,7 +15,9 @@
     "samples:add": "node --env-file=.env.local scripts/sample-listings.mjs add",
     "samples:remove": "node --env-file=.env.local scripts/sample-listings.mjs remove",
     "test-accounts:add": "node --env-file=.env.local scripts/test-accounts.mjs add",
-    "test-accounts:remove": "node --env-file=.env.local scripts/test-accounts.mjs remove"
+    "test-accounts:remove": "node --env-file=.env.local scripts/test-accounts.mjs remove",
+    "photos:site": "node scripts/photos.mjs site",
+    "photos:samples": "node --env-file=.env.local scripts/photos.mjs samples"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
