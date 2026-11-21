@@ -63,8 +63,14 @@ export function passwordStrength(pw: string) {
   return Math.min(score, 4);
 }
 
-/** Only allow redirects to paths inside this site. */
+/**
+ * Only allow redirects to paths inside this site. Rejects "//evil.com" and
+ * "/\\evil.com" (browsers treat a backslash like a slash, so both would leave
+ * the site), and control characters such as tabs and newlines.
+ */
 export function safeNextPath(next: string | null | undefined, fallback = "/dashboard") {
-  if (!next || !next.startsWith("/") || next.startsWith("//")) return fallback;
+  if (!next || !next.startsWith("/") || next.startsWith("//") || next.startsWith("/\\")) return fallback;
+  // eslint-disable-next-line no-control-regex
+  if (/[\u0000-\u001f\u007f]/.test(next)) return fallback;
   return next;
 }

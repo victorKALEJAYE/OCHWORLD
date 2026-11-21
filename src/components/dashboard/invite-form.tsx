@@ -7,7 +7,7 @@ import { FormField } from "@/components/auth/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { createInvitation, type InviteState } from "@/lib/dashboard/actions";
+import { createInvitation, type InviteState } from "@/lib/team/actions";
 
 /** Owners and admins invite teammates. The result is a link to share however they like. */
 export function InviteForm({ organizationId, organizationName }: { organizationId: string; organizationName: string }) {

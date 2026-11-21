@@ -5,7 +5,7 @@ import { FormAlert } from "@/components/auth/form-alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAccount } from "@/lib/auth/account";
-import { acceptInvitation } from "@/lib/dashboard/actions";
+import { acceptInvitation } from "@/lib/team/actions";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Team invitation", robots: { index: false } };

@@ -13,7 +13,7 @@ import { CheckEmailCard } from "@/components/auth/check-email-card";
 import { FormAlert, type AlertState } from "@/components/auth/form-alert";
 import { FormField } from "@/components/auth/form-field";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
-import { friendlyAuthError } from "@/lib/auth-errors";
+import { friendlyAuthError } from "@/lib/auth/errors";
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/lib/validations/auth";
 
 export function ForgotPasswordForm() {

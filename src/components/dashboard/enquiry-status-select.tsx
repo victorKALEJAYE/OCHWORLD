@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useFormStatus } from "react-dom";
-import { updateEnquiryStatus } from "@/lib/dashboard/actions";
+import { updateEnquiryStatus } from "@/lib/enquiries/actions";
 import { cn } from "@/lib/utils";
 
 const OPTIONS = [

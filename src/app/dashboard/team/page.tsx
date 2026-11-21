@@ -7,15 +7,9 @@ import { ErrorState } from "@/components/feedback/error-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requireOnboardedAccount } from "@/lib/auth/account";
-import { cancelInvitation, removeMember } from "@/lib/dashboard/actions";
-import {
-  activeMembership,
-  canManageTeam,
-  getPendingInvitations,
-  getTeam,
-  type PendingInvitation,
-  type TeamMember,
-} from "@/lib/listings/queries";
+import { activeMembership, canManageTeam } from "@/lib/auth/permissions";
+import { cancelInvitation, removeMember } from "@/lib/team/actions";
+import { getPendingInvitations, getTeam, type PendingInvitation, type TeamMember } from "@/lib/team/queries";
 
 export const metadata: Metadata = { title: "Team" };
 

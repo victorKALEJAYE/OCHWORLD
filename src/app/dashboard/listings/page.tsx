@@ -8,13 +8,8 @@ import { ErrorState } from "@/components/feedback/error-state";
 import { LISTING_STATUS_LABELS, ManagedListingList } from "@/components/listings/managed-listing-list";
 import { Button } from "@/components/ui/button";
 import { requireOnboardedAccount } from "@/lib/auth/account";
-import {
-  activeMembership,
-  canDeleteListings,
-  getManagedListings,
-  type ListingStatus,
-  type ManagedListing,
-} from "@/lib/listings/queries";
+import { activeMembership, canDeleteListings } from "@/lib/auth/permissions";
+import { getManagedListings, type ListingStatus, type ManagedListing } from "@/lib/listings/queries";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Your listings" };

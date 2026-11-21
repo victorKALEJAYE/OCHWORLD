@@ -10,6 +10,22 @@ Currently built: the public marketplace (homepage, search, listings, property pa
 authentication (Google, Apple, email + password) and the design system.
 Organization membership, roles and onboarding are in place; listing management and admin tools follow.
 
+**Start here:** [docs/architecture.md](docs/architecture.md) explains how the system is built and the rules for changing it.
+
+## Everyday commands
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Run the site at http://localhost:3000 |
+| `npm test` | App unit tests (Node 22.18+) |
+| `npm run typecheck` | Check types across the codebase |
+| `npm run build` | Production build (what Vercel runs) |
+| `npm run test:db` | Database security tests against an empty Postgres (CI runs this; needs `DATABASE_URL` and `psql`) |
+| `npm run samples:add` / `samples:remove` | Add/remove the 10 sample listings (needs `SUPABASE_SECRET_KEY`) |
+| `npm run test-accounts:add` / `test-accounts:remove` | Create/remove test logins (needs `SUPABASE_SECRET_KEY`) |
+
+Every push runs the CI pipeline (`.github/workflows/ci.yml`): checks and database tests first, then new migrations are applied to Supabase.
+
 ## 1. Install
 
 ```bash
@@ -31,8 +47,8 @@ npm install
    - Site URL: `http://localhost:3000`
    - Redirect URLs: add `http://localhost:3000/auth/callback` (and your live domain's `/auth/callback` later)
 4. **SQL Editor** → run the files in `supabase/migrations/` **in order** (profiles, listings, tenancy, explicit grants, listing management), or paste `supabase/setup-all.sql` once on a new project.
-   After that, **new migrations apply automatically**: push to `main` and the GitHub Action
-   `.github/workflows/database.yml` runs them (needs the secrets `SUPABASE_ACCESS_TOKEN`,
+   After that, **new migrations apply automatically**: push to `main` and the CI pipeline
+   `.github/workflows/ci.yml` runs them after the checks pass (needs the secrets `SUPABASE_ACCESS_TOKEN`,
    `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_ID`). Add a new file for each change; never edit one that has run.
 5. Make yourself super admin (SQL Editor, once you've signed up):
    ```sql
@@ -91,39 +107,6 @@ Open http://localhost:3000 for the homepage, and http://localhost:3000/design-sy
 
 ## Project structure
 
-```
-src/
-├─ app/
-│  ├─ (auth)/              # black layout with brand panel
-│  │  ├─ sign-in/  sign-up/  forgot-password/  update-password/
-│  ├─ auth/callback/       # OAuth + email link handler
-│  ├─ auth/sign-out/
-│  ├─ dashboard/           # signed-in area: overview, listings, enquiries, team
-│  ├─ design-system/       # living design reference (dev only)
-│  ├─ error.tsx  not-found.tsx  loading.tsx
-│  ├─ globals.css          # light/dark theme tokens
-│  └─ layout.tsx           # fonts (Montserrat + Inter), metadata
-├─ components/
-│  ├─ ui/                  # shadcn/ui primitives: button, input, select, card, badge, skeleton…
-│  ├─ auth/                # forms, OAuth buttons, password field, strength meter…
-│  ├─ brand/               # logo, BrandLoader
-│  ├─ feedback/            # empty and error states
-│  ├─ layout/              # site header, mobile nav
-│  ├─ property/            # property card + skeleton
-│  └─ icons.tsx            # Google + Apple marks
-├─ config/site.ts          # name, tagline, navigation
-├─ lib/
-│  ├─ supabase/            # browser, server and middleware clients
-│  ├─ validations/auth.ts  # zod schemas
-│  ├─ properties/types.ts  # PropertyCardData view-model
-│  ├─ format.ts            # naira / price formatting
-│  ├─ auth-errors.ts       # friendly error copy
-│  └─ utils.ts             # cn()
-└─ middleware.ts           # refreshes session, guards /dashboard
-supabase/migrations/       # database schema, RLS policies (apply in order)
-supabase/seed.sql          # TEST data for local/staging only
-supabase/tests/            # RLS tests (see supabase/tests/README.md)
-docs/                      # design system, project status
-```
+See [docs/architecture.md](docs/architecture.md#4-code-layout) for the full layout, layering rules and conventions. In short: `src/app` routes, `src/components` UI, `src/lib/<domain>` data access (queries and server actions), `supabase/migrations` the database, `tests/` and `supabase/tests/` the tests.
 
 Add more shadcn components any time with `npx shadcn@latest add <name>`.

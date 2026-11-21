@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppleIcon, GoogleIcon } from "@/components/icons";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
-import { friendlyAuthError } from "@/lib/auth-errors";
+import { friendlyAuthError } from "@/lib/auth/errors";
 
 type Provider = "google" | "apple";
 

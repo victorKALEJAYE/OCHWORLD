@@ -13,7 +13,7 @@ import { FormField } from "@/components/auth/form-field";
 import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
 import { createClient } from "@/lib/supabase/client";
-import { friendlyAuthError } from "@/lib/auth-errors";
+import { friendlyAuthError } from "@/lib/auth/errors";
 import { updatePasswordSchema, type UpdatePasswordValues } from "@/lib/validations/auth";
 
 export function UpdatePasswordForm() {

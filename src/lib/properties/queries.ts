@@ -12,6 +12,7 @@ import {
 import type { DistrictSummary, OrganizationSummary, PropertyCardData, PropertyDetail } from "@/lib/properties/types";
 import { getViewer } from "@/lib/auth/viewer";
 import { createClient } from "@/lib/supabase/server";
+import { DataLoadError } from "@/lib/errors";
 
 /**
  * Read-only queries for the public marketplace. Server-side only.
@@ -21,21 +22,6 @@ import { createClient } from "@/lib/supabase/server";
  * The explicit `status = published` filters below are for index use and
  * clarity, not security.
  */
-
-export class DataLoadError extends Error {
-  constructor(what: string, cause: unknown) {
-    super(`Couldn't load ${what}${describeCause(cause)}`, { cause });
-    this.name = "DataLoadError";
-  }
-}
-
-/** Puts the Supabase/PostgREST error code and message in server logs (never shown to visitors). */
-function describeCause(cause: unknown) {
-  if (!cause || typeof cause !== "object") return "";
-  const { code, message, hint } = cause as { code?: string; message?: string; hint?: string };
-  const parts = [code, message, hint && `hint: ${hint}`].filter(Boolean);
-  return parts.length ? ` (${parts.join(" | ")})` : "";
-}
 
 export type SearchResult = {
   items: PropertyCardData[];

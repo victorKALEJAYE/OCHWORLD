@@ -19,7 +19,7 @@ import { PasswordInput } from "@/components/auth/password-input";
 import { PasswordStrength } from "@/components/auth/password-strength";
 import { CheckEmailCard } from "@/components/auth/check-email-card";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
-import { friendlyAuthError } from "@/lib/auth-errors";
+import { friendlyAuthError } from "@/lib/auth/errors";
 import { signUpSchema, type SignUpValues } from "@/lib/validations/auth";
 
 export function SignUpForm({

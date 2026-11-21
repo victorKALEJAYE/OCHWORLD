@@ -4,7 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { ListingForm } from "@/components/listings/listing-form";
 import { requireOnboardedAccount } from "@/lib/auth/account";
-import { activeMembership, getDistrictOptions } from "@/lib/listings/queries";
+import { activeMembership } from "@/lib/auth/permissions";
+import { getDistrictOptions } from "@/lib/listings/queries";
 
 export const metadata: Metadata = { title: "Add a listing" };
 

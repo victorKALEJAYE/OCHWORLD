@@ -100,3 +100,12 @@ Resolved in Phase 4: audit issues 1 (role escalation), 2 (metadata roles), 3 (mi
 - Run `supabase/migrations/20261121000005_listing_management.sql` in the Supabase SQL Editor (after migrations 1–4).
 - Optional later: send invitations by email (needs an email provider such as Resend), drag-to-reorder photos, listing analytics (views, enquiries per listing).
 - Tests: `supabase/tests/rls_management.test.sql`, 30 checks. All 106 database checks pass on PostgreSQL 16.
+
+## Engineering quality (between Phases 5 and 6)
+
+- `docs/architecture.md`: system overview, decision records, code layout, conventions, testing and delivery pipeline.
+- `lib/` reorganised by domain: `auth` (account, permissions, errors), `properties`, `listings`, `enquiries`, `team`, `dashboard`; shared `DataLoadError` in `lib/errors.ts`.
+- App unit tests with Node's built-in runner (`npm test`, 35 tests): URL filters, redirect safety, listing and enquiry validation, formatting.
+- **Security fix:** `safeNextPath` accepted `/\evil.com`, which browsers treat as `//evil.com` (open redirect after sign-in). Now rejected, with tests.
+- CI pipeline (`.github/workflows/ci.yml`) replaces `database.yml`: typecheck + unit tests + build, and the database rebuilt from migrations in a throwaway Postgres with all RLS tests; migrations reach Supabase only if both pass.
+- Still to add (needs package installs): ESLint + Prettier, browser end-to-end tests (Playwright).

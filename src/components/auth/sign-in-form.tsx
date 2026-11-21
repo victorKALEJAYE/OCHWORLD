@@ -15,7 +15,7 @@ import { FormField } from "@/components/auth/form-field";
 import { OAuthButtons, OrDivider } from "@/components/auth/oauth-buttons";
 import { PasswordInput } from "@/components/auth/password-input";
 import { createClient } from "@/lib/supabase/client";
-import { friendlyAuthError } from "@/lib/auth-errors";
+import { friendlyAuthError } from "@/lib/auth/errors";
 import { signInSchema, type SignInValues } from "@/lib/validations/auth";
 
 export function SignInForm({ next, initialError }: { next: string; initialError?: string }) {

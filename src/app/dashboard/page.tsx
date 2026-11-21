@@ -7,12 +7,8 @@ import { ErrorState } from "@/components/feedback/error-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requireOnboardedAccount } from "@/lib/auth/account";
-import {
-  getOrganizationEnquiries,
-  getOrganizationStats,
-  getSavedProperties,
-  getSentEnquiries,
-} from "@/lib/dashboard/queries";
+import { getOrganizationStats, getSavedProperties } from "@/lib/dashboard/queries";
+import { getOrganizationEnquiries, getSentEnquiries } from "@/lib/enquiries/queries";
 
 export const metadata: Metadata = { title: "Dashboard" };
 

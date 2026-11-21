@@ -1,0 +1,136 @@
+# OCHWORLD pipeline. On every push and pull request:
+#   1. app       typecheck, unit tests, production build
+#   2. database  build the database from the migrations in a throwaway Postgres
+#                and run the 100+ security (RLS) tests
+#   3. migrate   main branch only, and only if 1 and 2 passed: apply new
+#                migrations to the live Supabase database
+# Vercel deploys the website separately. See docs/architecture.md.
+#
+# The migrate job needs three repository secrets
+# (Settings → Secrets and variables → Actions):
+#   SUPABASE_ACCESS_TOKEN  Supabase → Account → Access Tokens (starts with sbp_)
+#   SUPABASE_DB_PASSWORD   Supabase → Project Settings → Database
+#   SUPABASE_PROJECT_ID    the project reference, e.g. rtosuaubgdeilywnefla
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch cancels checks still running for an older one.
+# (The migrate job has its own, non-cancelling lock below.)
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  app:
+    name: App checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        run: npm run build
+        env:
+          # Public placeholders: the build doesn't contact Supabase (every data
+          # page renders per request). Real values live in Vercel.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_placeholder
+          NEXT_PUBLIC_SITE_URL: https://example.com
+          NEXT_TELEMETRY_DISABLED: "1"
+
+  database:
+    name: Database security tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build database from migrations and run RLS tests
+        run: bash scripts/test-db.sh
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
+  migrate:
+    name: Apply migrations to Supabase
+    needs: [app, database]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Never run two migration jobs against the live database at once.
+    concurrency:
+      group: supabase-migrations
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      # A fixed version: "latest" makes the action call GitHub's API, which is
+      # rate limited. Bump this occasionally.
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.115.0
+
+      # Copies the secrets into the job, trimming stray spaces or line breaks
+      # that easily slip in when pasting, and checks each one looks right.
+      - name: Check the secrets
+        env:
+          RAW_SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          RAW_SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          RAW_SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          trim() { local v="$1"; v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"; printf '%s' "$v"; }
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_ID; do
+            raw="RAW_$name"
+            value="$(trim "${!raw}")"
+            if [ -z "$value" ]; then echo "::error::Repository secret $name is missing or empty"; exit 1; fi
+            echo "::add-mask::$value"
+            declare "$name=$value"
+            echo "$name=$value" >> "$GITHUB_ENV"
+          done
+          if [[ ! "$SUPABASE_ACCESS_TOKEN" =~ ^sbp_[a-zA-Z0-9_]+$ ]]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN must start with sbp_ (Supabase → Account → Access Tokens)."
+            exit 1
+          fi
+          if [[ ! "$SUPABASE_PROJECT_ID" =~ ^[a-z0-9]{20}$ ]]; then
+            echo "::error::SUPABASE_PROJECT_ID should be the 20-letter project reference."
+            exit 1
+          fi
+          echo "All three secrets look right."
+
+      - name: Connect to the Supabase project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      # Migrations 1-3 were applied by hand before automation existed; this
+      # keeps them recorded as applied. Harmless when already recorded.
+      - name: Record migrations applied by hand
+        run: supabase migration repair --status applied 20261119000001 20261119000002 20261120000003
+
+      - name: Preview what will run
+        run: supabase db push --dry-run
+
+      - name: Apply new migrations
+        run: supabase db push
+
+      - name: Show migration history
+        run: supabase migration list

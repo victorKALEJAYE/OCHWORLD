@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requireOnboardedAccount } from "@/lib/auth/account";
 import { setListingStatus } from "@/lib/listings/actions";
-import { canDeleteListings, getDistrictOptions, getEditableListing } from "@/lib/listings/queries";
+import { canDeleteListings } from "@/lib/auth/permissions";
+import { getDistrictOptions, getEditableListing } from "@/lib/listings/queries";
 
 export const metadata: Metadata = { title: "Edit listing" };
 

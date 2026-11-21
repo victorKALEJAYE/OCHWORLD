@@ -6,8 +6,8 @@ import { DashboardPageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { requireOnboardedAccount } from "@/lib/auth/account";
-import { getOrganizationEnquiries, type EnquirySummary } from "@/lib/dashboard/queries";
-import { activeMembership } from "@/lib/listings/queries";
+import { activeMembership } from "@/lib/auth/permissions";
+import { getOrganizationEnquiries, type EnquirySummary } from "@/lib/enquiries/queries";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Enquiries" };

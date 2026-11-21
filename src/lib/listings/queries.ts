@@ -1,26 +1,14 @@
-import { redirect } from "next/navigation";
-import type { Account, Membership } from "@/lib/auth/account";
-import { DataLoadError } from "@/lib/properties/queries";
+import { DataLoadError } from "@/lib/errors";
 import type { ListingType, PropertyType, RentPeriod } from "@/lib/properties/types";
 import type { Enums, Tables } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Queries for the agent/landlord dashboard. RLS limits every row to the
+ * Listing management (agent/landlord dashboard). RLS limits every row to the
  * signed-in user's organizations, so these never see another tenant's data.
  */
 
 export type ListingStatus = Enums<"listing_status">;
-
-/** The organization a dashboard page is working on: `?org=<id>`, or the user's first. */
-export function activeMembership(account: Account, orgParam?: string): Membership {
-  const membership = account.memberships.find((m) => m.id === orgParam) ?? account.memberships[0];
-  if (!membership) redirect("/dashboard");
-  return membership;
-}
-
-export const canManageTeam = (m: Membership) => m.role === "owner" || m.role === "admin";
-export const canDeleteListings = canManageTeam;
 
 export type ManagedListing = {
   id: string;
@@ -152,55 +140,4 @@ export async function getDistrictOptions(): Promise<DistrictOption[]> {
   const { data, error } = await supabase.from("districts").select("id, name").order("name");
   if (error) throw new DataLoadError("districts", error);
   return data;
-}
-
-export type TeamMember = {
-  userId: string;
-  name: string;
-  email?: string;
-  role: Enums<"org_role">;
-  joinedAt: string;
-};
-
-export type PendingInvitation = {
-  id: string;
-  email: string;
-  role: Enums<"org_role">;
-  token: string;
-  expiresAt: string;
-  expired: boolean;
-};
-
-export async function getTeam(organizationId: string): Promise<TeamMember[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.rpc("organization_team", { org: organizationId });
-  if (error) throw new DataLoadError("your team", error);
-  return (data ?? []).map((m) => ({
-    userId: m.user_id,
-    name: m.full_name || "Unnamed member",
-    email: m.email ?? undefined,
-    role: m.role,
-    joinedAt: m.joined_at,
-  }));
-}
-
-/** Open invitations. Only owners and admins can read them (RLS); others get an empty list. */
-export async function getPendingInvitations(organizationId: string): Promise<PendingInvitation[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("organization_invitations")
-    .select("id, email, role, token, expires_at")
-    .eq("organization_id", organizationId)
-    .is("accepted_at", null)
-    .order("created_at", { ascending: false });
-  if (error) throw new DataLoadError("invitations", error);
-  const now = Date.now();
-  return data.map((i) => ({
-    id: i.id,
-    email: i.email,
-    role: i.role,
-    token: i.token,
-    expiresAt: i.expires_at,
-    expired: new Date(i.expires_at).getTime() < now,
-  }));
 }
