@@ -1,70 +1,144 @@
 "use client";
 
 import * as React from "react";
-import { Pause, Play } from "lucide-react";
 import { LegalServiceCard } from "@/components/legal/legal-service-card";
 import type { LegalServiceSummary } from "@/lib/legal/queries";
 import { cn } from "@/lib/utils";
 
-/** Seconds per service for one full loop: slow enough to read, steady enough to feel alive. */
-const SECONDS_PER_CARD = 7;
+/** Time each position stays on screen before sliding to the next. */
+const SLIDE_EVERY_MS = 4500;
+/** After the visitor swipes or taps a dot, wait this long before sliding again. */
+const RESUME_AFTER_MS = 8000;
 
 /**
- * Legal services as a continuous, endlessly looping row (a "marquee").
+ * Legal services as an auto-sliding row, like a shopping app's banner slider:
+ * one step at a time every few seconds, the next item peeking in at the edge,
+ * position dots underneath (the current one stretched into a pill), looping
+ * back to the start.
  *
- * - Pure CSS animation: the list is rendered twice side by side and the track
- *   slides left by exactly one copy, so the loop is seamless.
- * - Pauses while hovered or while a card has keyboard focus, and with the
- *   visible Pause button (WCAG 2.2.2: moving content can be stopped).
- * - For visitors who prefer reduced motion it doesn't move at all: the second
- *   copy is hidden and the row becomes a normal swipeable list.
- * - The duplicate copy is hidden from screen readers and keyboard focus.
+ * - Native horizontal scrolling with snap points, so swiping works on phones.
+ * - Pauses while hovered or focused, and for a few seconds after the visitor
+ *   swipes or taps a dot, then carries on (no pause/play button).
+ * - Never moves for visitors who prefer reduced motion; dots still work.
  */
 export function LegalServicesCarousel({ services }: { services: LegalServiceSummary[] }) {
-  const [paused, setPaused] = React.useState(false);
-  const duration = `${services.length * SECONDS_PER_CARD}s`;
+  const trackRef = React.useRef<HTMLUListElement>(null);
+  const [active, setActive] = React.useState(0);
+  const [positions, setPositions] = React.useState(services.length);
+  const [hovered, setHovered] = React.useState(false);
+  const [visible, setVisible] = React.useState(false);
+  const [reducedMotion, setReducedMotion] = React.useState(true);
+  const pausedUntil = React.useRef(0);
 
-  return (
-    <div role="region" aria-label="Legal services" className="group/marquee">
-      <div className="mb-4 flex justify-end motion-reduce:hidden">
-        <button
-          type="button"
-          onClick={() => setPaused((p) => !p)}
-          aria-pressed={paused}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border bg-background px-3 text-xs font-semibold text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {paused ? <Play className="size-3.5" aria-hidden="true" /> : <Pause className="size-3.5" aria-hidden="true" />}
-          {paused ? "Play" : "Pause"}
-          <span className="sr-only"> moving legal services</span>
-        </button>
-      </div>
+  /** Width of one item plus the gap. */
+  const step = React.useCallback(() => {
+    const el = trackRef.current;
+    const item = el?.querySelector("li");
+    if (!el || !item) return 1;
+    return item.getBoundingClientRect().width + parseFloat(getComputedStyle(el).columnGap || "0");
+  }, []);
 
-      <div className="-mx-4 overflow-hidden px-4 sm:-mx-6 sm:px-6 motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:none]">
-        <div
-          style={{ "--marquee-duration": duration, ...(paused ? { animationPlayState: "paused" } : {}) } as React.CSSProperties}
-          className="flex w-max animate-marquee py-2 hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] motion-reduce:animate-none"
-        >
-          <CardRow services={services} />
-          <CardRow services={services} duplicate />
-        </div>
-      </div>
-    </div>
+  const measure = React.useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const s = step();
+    const last = Math.max(0, Math.round((el.scrollWidth - el.clientWidth) / s));
+    setPositions(last + 1);
+    setActive(Math.min(last, Math.round(el.scrollLeft / s)));
+  }, [step]);
+
+  React.useEffect(() => {
+    setReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const el = trackRef.current;
+    if (!el) return;
+    measure();
+    el.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("resize", measure);
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.4 });
+    io.observe(el);
+    return () => {
+      el.removeEventListener("scroll", measure);
+      window.removeEventListener("resize", measure);
+      io.disconnect();
+    };
+  }, [measure]);
+
+  const goTo = React.useCallback(
+    (index: number) => {
+      trackRef.current?.scrollTo({ left: index * step(), behavior: "smooth" });
+    },
+    [step]
   );
-}
 
-function CardRow({ services, duplicate = false }: { services: LegalServiceSummary[]; duplicate?: boolean }) {
+  // Slide one step every few seconds; after the last position, go back to the first.
+  React.useEffect(() => {
+    if (reducedMotion || hovered || !visible || positions <= 1) return;
+    const id = window.setInterval(() => {
+      if (document.hidden || Date.now() < pausedUntil.current) return;
+      goTo(active >= positions - 1 ? 0 : active + 1);
+    }, SLIDE_EVERY_MS);
+    return () => window.clearInterval(id);
+  }, [reducedMotion, hovered, visible, positions, active, goTo]);
+
+  const holdOff = () => {
+    pausedUntil.current = Date.now() + RESUME_AFTER_MS;
+  };
+
   return (
-    <ul
-      aria-hidden={duplicate || undefined}
-      // `inert` keeps the copy's links out of keyboard focus.
-      {...(duplicate ? { inert: true } : {})}
-      className={cn("flex shrink-0 gap-12 pr-12", duplicate && "motion-reduce:hidden")}
+    <div
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Legal services"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setHovered(true)}
+      onBlurCapture={() => setHovered(false)}
     >
-      {services.map((s) => (
-        <li key={s.slug} className="w-[240px] shrink-0 sm:w-[260px]">
-          <LegalServiceCard service={s} variant="plain" />
-        </li>
-      ))}
-    </ul>
+      <ul
+        ref={trackRef}
+        onPointerDown={holdOff}
+        onWheel={holdOff}
+        className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-10 overflow-x-auto scroll-smooth px-4 py-2 [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
+      >
+        {services.map((s, i) => (
+          <li
+            key={s.slug}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${services.length}: ${s.title}`}
+            // Phones: one item with the next peeking in. Larger screens: more per view.
+            className="w-[78%] shrink-0 snap-start sm:w-[calc((100%-2.5rem)/2)] lg:w-[calc((100%-5rem)/3)] xl:w-[calc((100%-7.5rem)/4)]"
+          >
+            <LegalServiceCard service={s} variant="plain" />
+          </li>
+        ))}
+      </ul>
+
+      {positions > 1 && (
+        <div className="mt-4 flex justify-center" role="group" aria-label="Choose slide">
+          {Array.from({ length: positions }, (_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                holdOff();
+                goTo(i);
+              }}
+              aria-label={`Go to slide ${i + 1} of ${positions}`}
+              aria-current={i === active ? "true" : undefined}
+              // Small dot, larger invisible tap area.
+              className="group grid h-8 place-items-center px-1"
+            >
+              <span
+                className={cn(
+                  "block h-1.5 rounded-full transition-all duration-300",
+                  i === active ? "w-6 bg-foreground" : "w-1.5 bg-foreground/25 group-hover:bg-foreground/50"
+                )}
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
