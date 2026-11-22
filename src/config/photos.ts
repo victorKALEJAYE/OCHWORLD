@@ -27,9 +27,11 @@ export const heroVideo: string | null = photos.heroVideo ?? null;
 
 /**
  * Explore Abuja background (e.g. the City Gate): `npm run media:explore -- <photo>`
- * and/or `npm run media:explore-video -- <video>`. Falls back to the homepage photo.
+ * and/or `npm run media:explore-video -- <video>`. Until then: the Central Business
+ * District photo, so it differs from the homepage.
  */
-export const explorePhoto: string | null = photos.explore ?? photos.hero;
+export const explorePhoto: string | null =
+  photos.explore ?? photos.districts["central-business-district"] ?? photos.hero;
 export const exploreVideo: string | null = photos.exploreVideo ?? null;
 
 export function districtPhoto(slug: string): string | undefined {
