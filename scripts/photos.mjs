@@ -8,6 +8,8 @@
  *   npm run photos:legal       a photo for each legal service → public/images/legal/
  *   npm run media:hero -- <file>        use your own photo (e.g. the City Gate) as the homepage hero
  *   npm run media:hero-video -- <file>  add a background video (MP4) behind the homepage hero
+ *   npm run media:explore -- <file>         your own photo behind the Explore Abuja page
+ *   npm run media:explore-video -- <file>   a background video (e.g. the City Gate) for Explore Abuja
  *   npm run photos:samples     photos for the 10 sample listings → Supabase Storage
  *                              (needs SUPABASE_SECRET_KEY in .env.local; skips
  *                              listings that already have photos, unless --replace)
@@ -204,9 +206,17 @@ function readManifest() {
   }
 }
 
-function useOwnMedia(kind, file) {
+/** Where your own media goes: the homepage hero or the Explore Abuja page. */
+const TARGETS = {
+  hero: { label: "Homepage hero", base: "hero", photoKey: "hero", videoKey: "heroVideo" },
+  explore: { label: "Explore Abuja background", base: "explore", photoKey: "explore", videoKey: "exploreVideo" },
+};
+
+function useOwnMedia(target, kind, file) {
+  const t = TARGETS[target];
+  const command = `media:${target}${kind === "video" ? "-video" : ""}`;
   if (!file || !existsSync(file)) {
-    console.error(`✖ File not found: ${file ?? "(none)"}\n  Example: npm run media:${kind === "video" ? "hero-video" : "hero"} -- "C:\\Users\\you\\Videos\\city-gate.${kind === "video" ? "mp4" : "jpg"}"`);
+    console.error(`✖ File not found: ${file ?? "(none)"}\n  Example: npm run ${command} -- "C:\\Users\\you\\Videos\\city-gate.${kind === "video" ? "mp4" : "jpg"}"`);
     process.exit(1);
   }
   const ext = path.extname(file).toLowerCase();
@@ -224,13 +234,13 @@ function useOwnMedia(kind, file) {
   }
   const folder = kind === "video" ? "public/videos" : "public/images";
   mkdirSync(folder, { recursive: true });
-  const name = kind === "video" ? `hero${ext}` : `hero${ext === ".jpeg" ? ".jpg" : ext}`;
+  const name = `${t.base}${ext === ".jpeg" ? ".jpg" : ext}`;
   copyFileSync(file, path.join(folder, name));
   const manifest = readManifest();
-  if (kind === "video") manifest.heroVideo = `/videos/${name}`;
-  else manifest.hero = `/images/${name}`;
+  if (kind === "video") manifest[t.videoKey] = `/videos/${name}`;
+  else manifest[t.photoKey] = `/images/${name}`;
   writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + "\n");
-  console.log(`✔ Homepage hero ${kind} set (${mb.toFixed(1)} MB). Check it with npm run dev, then commit and push.`);
+  console.log(`✔ ${t.label} ${kind} set (${mb.toFixed(1)} MB). Check it with npm run dev, then commit and push.`);
 }
 
 
@@ -270,9 +280,11 @@ if (mode === "site") {
   await legalPhotos();
 } else if (mode === "legal") await legalPhotos();
 else if (mode === "samples") await samplePhotos();
-else if (mode === "hero") useOwnMedia("photo", process.argv[3]);
-else if (mode === "hero-video") useOwnMedia("video", process.argv[3]);
+else if (mode === "hero") useOwnMedia("hero", "photo", process.argv[3]);
+else if (mode === "hero-video") useOwnMedia("hero", "video", process.argv[3]);
+else if (mode === "explore") useOwnMedia("explore", "photo", process.argv[3]);
+else if (mode === "explore-video") useOwnMedia("explore", "video", process.argv[3]);
 else {
-  console.error("Usage: node scripts/photos.mjs site|legal|samples|hero <file>|hero-video <file> [--replace] [--production]");
+  console.error("Usage: node scripts/photos.mjs site|legal|samples|hero|hero-video|explore|explore-video <file> [--replace] [--production]");
   process.exit(1);
 }

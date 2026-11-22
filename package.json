@@ -20,7 +20,9 @@
     "photos:samples": "node --env-file=.env.local scripts/photos.mjs samples",
     "media:hero": "node scripts/photos.mjs hero",
     "media:hero-video": "node scripts/photos.mjs hero-video",
-    "photos:legal": "node scripts/photos.mjs legal"
+    "photos:legal": "node scripts/photos.mjs legal",
+    "media:explore": "node scripts/photos.mjs explore",
+    "media:explore-video": "node scripts/photos.mjs explore-video"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

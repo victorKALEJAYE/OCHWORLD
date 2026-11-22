@@ -12,6 +12,8 @@ import generated from "@/config/photos.generated.json";
 type PhotoManifest = {
   hero: string | null;
   heroVideo?: string | null;
+  explore?: string | null;
+  exploreVideo?: string | null;
   districts: Record<string, string>;
   legal?: Record<string, string>;
 };
@@ -22,6 +24,13 @@ export const heroPhoto: string | null = photos.hero;
 
 /** Optional background video for the homepage hero (`npm run media:hero-video -- <file>`). */
 export const heroVideo: string | null = photos.heroVideo ?? null;
+
+/**
+ * Explore Abuja background (e.g. the City Gate): `npm run media:explore -- <photo>`
+ * and/or `npm run media:explore-video -- <video>`. Falls back to the homepage photo.
+ */
+export const explorePhoto: string | null = photos.explore ?? photos.hero;
+export const exploreVideo: string | null = photos.exploreVideo ?? null;
 
 export function districtPhoto(slug: string): string | undefined {
   return photos.districts[slug];

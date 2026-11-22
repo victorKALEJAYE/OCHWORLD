@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Landmark, Map as MapIcon, MapPinned } from "lucide-react";
 import { DisplayHeading } from "@/components/brand/display-heading";
+import { MediaBackground } from "@/components/brand/media-background";
 import { DistrictGrid } from "@/components/directory/district-grid";
 import { ExploreNav } from "@/components/explore/explore-nav";
 import { ErrorState } from "@/components/feedback/error-state";
+import { explorePhoto, exploreVideo } from "@/config/photos";
 import { getDistricts } from "@/lib/properties/queries";
 import type { DistrictSummary } from "@/lib/properties/types";
 
@@ -47,11 +49,12 @@ export default async function AreasPage() {
     <>
       <ExploreNav active="overview" />
       <main>
-        <section className="border-b bg-surface">
-          <div className="mx-auto max-w-content px-4 py-14 sm:px-6">
+        <section className="dark relative isolate flex min-h-[420px] items-center overflow-hidden bg-black text-white sm:min-h-[520px]">
+          <MediaBackground photo={explorePhoto} video={exploreVideo} tint="bg-black/55" priority />
+          <div className="mx-auto w-full max-w-content px-4 py-16 sm:px-6">
             <p className="eyebrow">Explore Abuja</p>
-            <DisplayHeading lead="Know the city" accent="before you move." className="mt-5" />
-            <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
+            <DisplayHeading lead="Know the city" accent="before you move." size="xl" className="mt-5 max-w-3xl" />
+            <p className="mt-6 max-w-2xl text-lg text-white/85">
               Abuja is one of the few capitals in the world planned from scratch. Understanding the plan and the districts
               helps you choose where to buy or rent.
             </p>

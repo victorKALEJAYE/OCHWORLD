@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building, Home, KeyRound, LandPlot, MapPin } from "lucide-react";
 import { DisplayHeading } from "@/components/brand/display-heading";
+import { MediaBackground } from "@/components/brand/media-background";
 import { HeroSearch } from "@/components/search/hero-search";
 import { Button } from "@/components/ui/button";
 import { districtPhoto, heroPhoto, heroVideo } from "@/config/photos";
@@ -17,24 +18,7 @@ import type { DistrictSummary } from "@/lib/properties/types";
 export function HomeHero({ districts }: { districts: DistrictSummary[] }) {
   return (
     <section className="relative isolate flex min-h-[520px] items-center overflow-hidden bg-black text-white sm:min-h-[600px]">
-      {heroPhoto && <Image src={heroPhoto} alt="" fill priority sizes="100vw" className="-z-20 object-cover" />}
-      {heroVideo && (
-        // Muted, looping background video; the photo underneath shows while it loads,
-        // and instead of it for people who prefer reduced motion.
-        <video
-          className="absolute inset-0 -z-20 size-full object-cover motion-reduce:hidden"
-          src={heroVideo}
-          poster={heroPhoto ?? undefined}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-        />
-      )}
-      {/* Light, even tint (no gradient) so the photo stays visible and white text stays readable. */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/45" />
+      <MediaBackground photo={heroPhoto} video={heroVideo} tint="bg-black/45" priority />
 
       <div className="mx-auto w-full max-w-content px-4 py-16 sm:px-6">
         <DisplayHeading lead="Buy. Rent. Invest." accent="In Abuja." size="xl" className="max-w-3xl" />
