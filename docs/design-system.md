@@ -80,7 +80,7 @@ and `success`.
 | Empty / error states | `components/feedback/*` | Always offer a next step; 404 and error pages keep a header |
 | Legal service card | `components/legal/legal-service-card.tsx` | Black icon tile, gold icon; carousel in `legal-services-carousel.tsx` |
 | Location rating | `components/explore/district-ratings.tsx` | 1–5 bars per category, "Not yet rated" when empty |
-| Carousel | `components/legal/legal-services-carousel.tsx` | Native scroll-snap, arrows on desktop, swipe on phones, gentle auto-advance that stops on interaction, pause button, off for reduced motion |
+| Moving row (marquee) | `components/legal/legal-services-carousel.tsx` | Legal services on the homepage: continuous endless loop (CSS `animate-marquee`, ~7 s per card), pauses on hover/focus and with the Pause button, still swipeable row for reduced motion |
 
 ## 6. Loading strategy
 

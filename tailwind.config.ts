@@ -17,6 +17,13 @@ const config: Config = {
   theme: {
     container: { center: true, padding: "1rem", screens: { "2xl": "1280px" } },
     extend: {
+      keyframes: {
+        // Slides a doubled list left by exactly one copy for a seamless loop.
+        marquee: { from: { transform: "translateX(0)" }, to: { transform: "translateX(-50%)" } },
+      },
+      animation: {
+        marquee: "marquee var(--marquee-duration, 40s) linear infinite",
+      },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-montserrat)", "var(--font-inter)", "sans-serif"],
