@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { DataLoadError } from "@/lib/errors";
+import { legalPhoto } from "@/config/photos";
 import { LEGACY_SERVICE_LABELS } from "@/lib/legal/constants";
 import type { Enums, LegalServiceIcon } from "@/lib/supabase/database.types";
 import { createClient } from "@/lib/supabase/server";
@@ -10,7 +11,15 @@ export type LegalServiceSummary = {
   title: string;
   icon: LegalServiceIcon;
   summary: string;
+  /** Uploaded by the team, else the bundled default photo; undefined if neither. */
+  imageUrl?: string;
 };
+
+type ServiceRow = { id: string; slug: string; title: string; icon: LegalServiceIcon; summary: string; image_url: string | null };
+
+function withImage<T extends ServiceRow>({ image_url, ...row }: T) {
+  return { ...row, imageUrl: image_url ?? legalPhoto(row.slug) };
+}
 
 export type LegalServiceDetail = LegalServiceSummary & {
   description: string;
@@ -26,7 +35,7 @@ export const getLegalServices = cache(async (): Promise<LegalServiceSummary[]> =
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("legal_services")
-    .select("id, slug, title, icon, summary")
+    .select("id, slug, title, icon, summary, image_url")
     .eq("is_published", true)
     .order("position")
     .order("title");
@@ -34,7 +43,7 @@ export const getLegalServices = cache(async (): Promise<LegalServiceSummary[]> =
     console.error(new DataLoadError("legal services", error));
     return [];
   }
-  return data;
+  return data.map(withImage);
 });
 
 /** One published service by its slug, or null. */
@@ -43,12 +52,12 @@ export const getLegalService = cache(async (slug: string): Promise<LegalServiceD
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("legal_services")
-    .select("id, slug, title, icon, summary, description, covers, reasons")
+    .select("id, slug, title, icon, summary, description, covers, reasons, image_url")
     .eq("slug", slug)
     .eq("is_published", true)
     .maybeSingle();
   if (error) throw new DataLoadError("this legal service", error);
-  return data;
+  return data ? withImage(data) : null;
 });
 
 export type LegalRequestSummary = {

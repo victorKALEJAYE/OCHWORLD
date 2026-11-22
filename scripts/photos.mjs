@@ -5,6 +5,7 @@
  *
  *   npm run photos:site        homepage hero + district photos → public/images/
  *                              (commit and push these; no keys needed)
+ *   npm run photos:legal       a photo for each legal service → public/images/legal/
  *   npm run media:hero -- <file>        use your own photo (e.g. the City Gate) as the homepage hero
  *   npm run media:hero-video -- <file>  add a background video (MP4) behind the homepage hero
  *   npm run photos:samples     photos for the 10 sample listings → Supabase Storage
@@ -70,7 +71,7 @@ const DISTRICTS = {
 
 async function sitePhotos() {
   mkdirSync("public/images/districts", { recursive: true });
-  const manifest = { hero: null, districts: {} };
+  const manifest = { ...readManifest(), hero: null, districts: {} };
 
   console.log("Homepage hero…");
   const hero = await firstWorking(HERO, 1920, "hero");
@@ -232,12 +233,46 @@ function useOwnMedia(kind, file) {
   console.log(`✔ Homepage hero ${kind} set (${mb.toFixed(1)} MB). Check it with npm run dev, then commit and push.`);
 }
 
+
+// ---------------------------------------------------------------------------
+// Legal service photos → public/images/legal/<slug>.jpg
+// ---------------------------------------------------------------------------
+
+/** Candidates per legal service, best first (free Unsplash photos). */
+const LEGAL = {
+  "property-due-diligence": ["MhqUBTxQ3Hw", "8k5j5z6ZYT4", "ZH4FUYiaczY"],
+  documentation: ["QI6NLgN5XnM", "HJckKnwCXxQ", "OQMZwNd3ThU"],
+  "property-litigation": ["ozS0tPf8QT0", "6sl88x150Xs", "FaTLrG5-ViE"],
+  "legal-consultation": ["2AOIg7Qvu8w", "9TF9pMrCFMo", "Mqc-m8kgxkg"],
+  "tenancy-matters": ["3HfGnyPfWqQ", "Ebj87ehFNNU", "tFln_VTsnZ4"],
+  "land-and-title-matters": ["Qad7evtAV0A", "OO4laKg2HS0", "XZqORQbIp6g"],
+};
+
+async function legalPhotos() {
+  mkdirSync("public/images/legal", { recursive: true });
+  const manifest = readManifest();
+  manifest.legal = manifest.legal ?? {};
+  console.log("Legal service photos…");
+  for (const [slug, ids] of Object.entries(LEGAL)) {
+    const photo = await firstWorking(ids, 1000, slug);
+    if (!photo) continue;
+    writeFileSync(`public/images/legal/${slug}.jpg`, photo.buffer);
+    manifest.legal[slug] = `/images/legal/${slug}.jpg`;
+    console.log(`  ✔ ${slug} (${photo.id})`);
+  }
+  writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2) + "\n");
+  console.log("\n✔ Saved to public/images/legal. Check with npm run dev, then commit and push.");
+}
+
 const mode = process.argv[2];
-if (mode === "site") await sitePhotos();
+if (mode === "site") {
+  await sitePhotos();
+  await legalPhotos();
+} else if (mode === "legal") await legalPhotos();
 else if (mode === "samples") await samplePhotos();
 else if (mode === "hero") useOwnMedia("photo", process.argv[3]);
 else if (mode === "hero-video") useOwnMedia("video", process.argv[3]);
 else {
-  console.error("Usage: node scripts/photos.mjs site|samples|hero <file>|hero-video <file> [--replace] [--production]");
+  console.error("Usage: node scripts/photos.mjs site|legal|samples|hero <file>|hero-video <file> [--replace] [--production]");
   process.exit(1);
 }

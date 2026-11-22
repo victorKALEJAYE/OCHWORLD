@@ -9,7 +9,12 @@ import generated from "@/config/photos.generated.json";
  * To use your own photo of a district, save it as
  * public/images/districts/<district-slug>.jpg and add it to the JSON.
  */
-type PhotoManifest = { hero: string | null; heroVideo?: string | null; districts: Record<string, string> };
+type PhotoManifest = {
+  hero: string | null;
+  heroVideo?: string | null;
+  districts: Record<string, string>;
+  legal?: Record<string, string>;
+};
 
 const photos = generated as PhotoManifest;
 
@@ -20,4 +25,9 @@ export const heroVideo: string | null = photos.heroVideo ?? null;
 
 export function districtPhoto(slug: string): string | undefined {
   return photos.districts[slug];
+}
+
+/** Default photo for a legal service (`npm run photos:legal`), used when the team hasn't uploaded one. */
+export function legalPhoto(slug: string): string | undefined {
+  return photos.legal?.[slug];
 }

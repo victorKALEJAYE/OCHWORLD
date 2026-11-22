@@ -98,7 +98,7 @@ export function LegalServicesCarousel({ services }: { services: LegalServiceSumm
         ref={trackRef}
         onPointerDown={holdOff}
         onWheel={holdOff}
-        className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-10 overflow-x-auto scroll-smooth px-4 py-2 [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto scroll-smooth px-4 py-2 [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
       >
         {services.map((s, i) => (
           <li
@@ -106,10 +106,10 @@ export function LegalServicesCarousel({ services }: { services: LegalServiceSumm
             role="group"
             aria-roledescription="slide"
             aria-label={`${i + 1} of ${services.length}: ${s.title}`}
-            // Phones: one item with the next peeking in. Larger screens: more per view.
-            className="w-[78%] shrink-0 snap-start sm:w-[calc((100%-2.5rem)/2)] lg:w-[calc((100%-5rem)/3)] xl:w-[calc((100%-7.5rem)/4)]"
+            // Phones: one card with the next peeking in. Larger screens: more per view.
+            className="w-[80%] shrink-0 snap-start sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-2rem)/3)] xl:w-[calc((100%-3rem)/4)]"
           >
-            <LegalServiceCard service={s} variant="plain" />
+            <LegalServiceCard service={s} variant="photo" />
           </li>
         ))}
       </ul>

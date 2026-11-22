@@ -354,6 +354,7 @@ export type Database = {
           description: string;
           covers: string[];
           reasons: string[];
+          image_url: string | null;
           position: number;
           is_published: boolean;
           created_at: string;
@@ -367,6 +368,7 @@ export type Database = {
           description: string;
           covers?: string[];
           reasons?: string[];
+          image_url?: string | null;
           position?: number;
           is_published?: boolean;
         };
@@ -378,6 +380,7 @@ export type Database = {
           description: string;
           covers: string[];
           reasons: string[];
+          image_url: string | null;
           position: number;
           is_published: boolean;
         }>;

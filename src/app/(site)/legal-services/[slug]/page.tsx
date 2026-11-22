@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CheckCircle2, ChevronRight, HelpCircle } from "lucide-react";
@@ -49,7 +50,8 @@ export default async function LegalServicePage({ params, searchParams }: Props) 
               <ChevronRight className="size-4" aria-hidden="true" />
               <span className="text-foreground">{service.title}</span>
             </nav>
-            <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-start">
+            <div className="mt-8 grid items-center gap-10 lg:grid-cols-[1fr_minmax(0,440px)]">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
               <span className="grid size-16 shrink-0 place-items-center rounded-xl bg-foreground text-primary">
                 <LegalIcon name={service.icon} className="size-8" />
               </span>
@@ -60,6 +62,12 @@ export default async function LegalServicePage({ params, searchParams }: Props) 
                   <Link href="#request">Request {service.title.toLowerCase()}</Link>
                 </Button>
               </div>
+            </div>
+            {service.imageUrl && (
+              <div className="relative hidden aspect-[4/3] overflow-hidden rounded-xl border bg-muted shadow-card lg:block">
+                <Image src={service.imageUrl} alt="" fill priority sizes="440px" className="object-cover" />
+              </div>
+            )}
             </div>
           </div>
         </section>
