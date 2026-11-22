@@ -6,7 +6,7 @@ import { LegalServiceCard } from "@/components/legal/legal-service-card";
 import type { LegalServiceSummary } from "@/lib/legal/queries";
 import { cn } from "@/lib/utils";
 
-/** Seconds per card for one full loop: slow enough to read, steady enough to feel alive. */
+/** Seconds per service for one full loop: slow enough to read, steady enough to feel alive. */
 const SECONDS_PER_CARD = 7;
 
 /**
@@ -39,7 +39,7 @@ export function LegalServicesCarousel({ services }: { services: LegalServiceSumm
         </button>
       </div>
 
-      <div className="-mx-4 overflow-hidden sm:-mx-6 motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:none]">
+      <div className="-mx-4 overflow-hidden px-4 sm:-mx-6 sm:px-6 motion-reduce:overflow-x-auto motion-reduce:[scrollbar-width:none]">
         <div
           style={{ "--marquee-duration": duration, ...(paused ? { animationPlayState: "paused" } : {}) } as React.CSSProperties}
           className="flex w-max animate-marquee py-2 hover:[animation-play-state:paused] focus-within:[animation-play-state:paused] motion-reduce:animate-none"
@@ -58,11 +58,11 @@ function CardRow({ services, duplicate = false }: { services: LegalServiceSummar
       aria-hidden={duplicate || undefined}
       // `inert` keeps the copy's links out of keyboard focus.
       {...(duplicate ? { inert: true } : {})}
-      className={cn("flex shrink-0 gap-4 pl-4 sm:pl-6", duplicate && "motion-reduce:hidden")}
+      className={cn("flex shrink-0 gap-12 pr-12", duplicate && "motion-reduce:hidden")}
     >
       {services.map((s) => (
-        <li key={s.slug} className="w-[280px] shrink-0 sm:w-[300px]">
-          <LegalServiceCard service={s} />
+        <li key={s.slug} className="w-[240px] shrink-0 sm:w-[260px]">
+          <LegalServiceCard service={s} variant="plain" />
         </li>
       ))}
     </ul>
