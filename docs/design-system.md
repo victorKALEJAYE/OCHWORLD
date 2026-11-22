@@ -34,15 +34,19 @@ pages, and as gold text on dark pages.
 Light (white) is the default. Add the `dark` class to any wrapper to switch that
 subtree to the black theme; components don't need to know which theme they are in.
 
+One light theme everywhere: white header, white or light-grey pages. Black
+appears only behind photos (homepage hero, district pages, sign-in photo
+panel), always as an even tint, never a gradient.
+
 | Page | Dominant | Gold used for |
 |---|---|---|
-| Homepage | Black hero, white sections below | Search button, "Featured" badges |
+| Homepage | Photo hero (tinted), white sections below | Search button, gold full stop, "Featured" badges |
 | Search & listings | White | Active filters, primary action |
 | Property detail | White | Enquire button |
-| Explore Abuja / areas | White | Rating bars |
-| Sign in & sign up | Black | Logo, main button, links |
-| Agent & landlord dashboards | White on light-grey canvas | Primary actions, active nav item |
-| Super admin | White on light-grey canvas | Primary actions only |
+| Explore Abuja | White; photo hero on district pages | Rating bars, active tab |
+| Legal services | White with light-grey sections | Icon tiles, primary action |
+| Sign in & sign up | White; photo panel on large screens | Main button, links |
+| Dashboards | White on light-grey canvas | Primary actions, active tab |
 
 Neutrals are pure greys (`background`, `surface`, `muted`, `border`,
 `muted-foreground`, `foreground`). Status colours are limited to `destructive`
@@ -52,7 +56,7 @@ and `success`.
 
 - **Montserrat** (600–800) for headings and prices: geometric, closest to the logo lettering.
 - **Inter** for everything else.
-- **Display headline** (`DisplayHeading`): Montserrat Light, first line uppercase, second line italic, gold full stop only. Used for the homepage hero and the auth panel, e.g. "FIND YOUR PLACE / *in Abuja.*". Don't use it more than once per page.
+- **Display headline** (`DisplayHeading`): Montserrat ExtraBold, two short lines, tight leading, gold full stop only, e.g. "Buy. Rent. Invest. / In Abuja.". The one headline style for heroes and page intros (homepage, Explore Abuja, Legal services, sign-in panel). Once per page. (Phase 5 replaced the earlier light uppercase/italic style so every page matches the homepage.)
 - Scale: display 44–96px, H1 36px, H2 24px, H3 18px, body 16px, small 14px, eyebrow 12px uppercase.
 
 ## 4. Shape, spacing, elevation
@@ -70,17 +74,20 @@ and `success`.
 | Checkbox, Label, Separator | `components/ui/*` | Radix primitives |
 | Badge | `components/ui/badge.tsx` | `solid` for listing type, `gold` for Featured |
 | Card | `components/ui/card.tsx` | `CardTitle` is `h3` by default; pass `as="h1"` for page-level cards |
-| Site header | `components/layout/site-header.tsx` | `tone="light" \| "dark"`, mobile menu in `mobile-nav.tsx` |
+| Site header | `components/layout/site-header.tsx` | Rendered once in the `(site)` and dashboard layouts; guests see Sign in, signed-in users the initials avatar + account menu (`account-menu.tsx`) |
 | Property card | `components/property/property-card.tsx` | Takes a `PropertyCardData` view-model; save button passed in as a slot |
 | Skeletons | `components/ui/skeleton.tsx`, `property/property-card-skeleton.tsx` | Same footprint as the real card |
-| Empty / error states | `components/feedback/*` | Always offer a next step |
+| Empty / error states | `components/feedback/*` | Always offer a next step; 404 and error pages keep a header |
+| Legal service card | `components/legal/legal-service-card.tsx` | Black icon tile, gold icon; carousel in `legal-services-carousel.tsx` |
+| Location rating | `components/explore/district-ratings.tsx` | 1–5 bars per category, "Not yet rated" when empty |
+| Carousel | `components/legal/legal-services-carousel.tsx` | Native scroll-snap, arrows on desktop, swipe on phones, gentle auto-advance that stops on interaction, pause button, off for reduced motion |
 
 ## 6. Loading strategy
 
 | Situation | What to show |
 |---|---|
 | First visit in a browser session | `InitialLoader`: black screen with `BrandLoader`, shown for at least 0.7s and removed as soon as the page has loaded (fades over 0.4s). Not shown again in the same session; a CSS fail-safe hides it after 6s if scripts fail. |
-| Page navigation | `BrandLoader` in the page area (`app/loading.tsx`). No text. |
+| Page navigation | Header and footer stay; `BrandLoader` with the wordmark in the content area (`app/(site)/loading.tsx`); dashboard shows a skeleton (`app/dashboard/loading.tsx`). |
 | Data loading inside a page (lists, cards) | Skeletons with the same layout as the content (`PropertyGridSkeleton`). |
 | A button's action in progress | Spinner inside the button and the button disabled. No overlays. |
 | Nothing to show | `EmptyState` with a way forward. |

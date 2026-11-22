@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ExploreNav, SourceList } from "@/components/explore/explore-nav";
-import { SiteHeader } from "@/components/layout/site-header";
 import { MASTER_PLAN_NOTE, MASTER_PLAN_SECTIONS } from "@/content/explore/master-plan";
 
 export const metadata: Metadata = {
@@ -14,7 +13,6 @@ export const metadata: Metadata = {
 export default function MasterPlanPage() {
   return (
     <>
-      <SiteHeader />
       <ExploreNav active="master-plan" />
       <main className="mx-auto grid max-w-content gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[14rem_1fr]">
         <nav aria-label="On this page" className="hidden lg:block">

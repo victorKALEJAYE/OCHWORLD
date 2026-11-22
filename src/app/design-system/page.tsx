@@ -6,6 +6,9 @@ import { BrandLoader } from "@/components/brand/brand-loader";
 import { DisplayHeading } from "@/components/brand/display-heading";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
+import { DistrictRatings } from "@/components/explore/district-ratings";
+import { LegalServiceCard } from "@/components/legal/legal-service-card";
+import { AccountMenuContent } from "@/components/layout/account-menu";
 import { SiteHeaderView } from "@/components/layout/site-header";
 import { FavouriteButton } from "@/components/property/favourite-button";
 import { PropertyCard } from "@/components/property/property-card";
@@ -17,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { designReviewProperties } from "./fixtures";
+import { designReviewAccount, designReviewLegalServices, designReviewProperties, designReviewRatings } from "./fixtures";
 
 export const metadata: Metadata = { title: "Design system", robots: { index: false, follow: false } };
 
@@ -88,8 +91,8 @@ export default function DesignSystemPage() {
 
         <Section title="Typography" note="Montserrat for headings (closest to the logo lettering), Inter for text.">
           <div className="space-y-5">
-            <TypeRow label="Display · Montserrat Light, uppercase + italic · hero and auth panel">
-              <DisplayHeading as="h2" lead="Find your place" accent="in Abuja." />
+            <TypeRow label="Display · Montserrat ExtraBold · heroes and page intros, once per page">
+              <DisplayHeading as="h2" lead="Buy. Rent. Invest." accent="In Abuja." />
             </TypeRow>
             <TypeRow label="H1 · 36px">
               <p className="font-display text-4xl font-bold tracking-tight">Homes for sale in Maitama</p>
@@ -212,12 +215,29 @@ export default function DesignSystemPage() {
           </div>
         </Section>
 
-        <Section title="Navigation" note="Same header, two tones. Links go to Phase 3 pages.">
+        <Section title="Navigation" note="One white header everywhere. Signed in: initials avatar opens the account menu.">
           <div className="space-y-4 overflow-hidden rounded-lg border">
             <SiteHeaderView className="static" account={null} />
           </div>
           <div className="mt-4 overflow-hidden rounded-lg border">
-            <SiteHeaderView tone="dark" className="static" account={null} />
+            <SiteHeaderView className="static" account={designReviewAccount} />
+          </div>
+          <div className="mt-4 w-72 overflow-hidden rounded-lg border shadow-elevated">
+            <AccountMenuContent account={designReviewAccount} />
+          </div>
+        </Section>
+
+        <Section title="Legal service cards" note="Black icon tile with gold icon. Homepage carousel and legal pages.">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {designReviewLegalServices.map((s) => (
+              <LegalServiceCard key={s.slug} service={s} />
+            ))}
+          </div>
+        </Section>
+
+        <Section title="Location rating" note="Scored 1-5 by the OCHWORLD team. Unscored categories say so.">
+          <div className="max-w-2xl">
+            <DistrictRatings ratings={designReviewRatings} />
           </div>
         </Section>
 
@@ -267,13 +287,13 @@ export default function DesignSystemPage() {
 }
 
 const pagePlan: [string, string, string][] = [
-  ["Homepage", "Black hero, white sections below", "Search button, “Featured” badges"],
+  ["Homepage", "Photo hero (tinted), white sections below", "Search button, gold full stop, “Featured” badges"],
   ["Search & listings", "White", "Active filters, primary action"],
-  ["Property detail", "White", "Enquire button, price highlight"],
-  ["Explore Abuja / areas", "White", "Rating bars"],
-  ["Sign in & sign up", "Black", "Logo, main button, links"],
-  ["Agent & landlord dashboards", "White, light-grey canvas", "Primary actions, active nav item"],
-  ["Super admin", "White, light-grey canvas", "Primary actions only"],
+  ["Property detail", "White", "Enquire button"],
+  ["Explore Abuja", "White; photo hero on district pages", "Rating bars, active tab"],
+  ["Legal services", "White, light-grey sections", "Icon tiles, primary action"],
+  ["Sign in & sign up", "White; photo panel on large screens", "Main button, links"],
+  ["Dashboards", "White on light-grey canvas", "Primary actions, active tab"],
 ];
 
 function Section({ title, note, children }: { title: string; note?: string; children: React.ReactNode }) {

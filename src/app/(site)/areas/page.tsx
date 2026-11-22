@@ -5,7 +5,6 @@ import { DisplayHeading } from "@/components/brand/display-heading";
 import { DistrictGrid } from "@/components/directory/district-grid";
 import { ExploreNav } from "@/components/explore/explore-nav";
 import { ErrorState } from "@/components/feedback/error-state";
-import { SiteHeader } from "@/components/layout/site-header";
 import { getDistricts } from "@/lib/properties/queries";
 import type { DistrictSummary } from "@/lib/properties/types";
 
@@ -46,7 +45,6 @@ export default async function AreasPage() {
 
   return (
     <>
-      <SiteHeader />
       <ExploreNav active="overview" />
       <main>
         <section className="border-b bg-surface">

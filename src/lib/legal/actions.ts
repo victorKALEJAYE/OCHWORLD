@@ -23,7 +23,7 @@ export async function requestLegalHelp(_prev: LegalRequestState, formData: FormD
     return typeof v === "string" && v.trim() ? v : undefined;
   };
   const parsed = legalRequestSchema.safeParse({
-    service: text("service"),
+    serviceSlug: text("service"),
     propertyId: text("propertyId"),
     propertyDetails: text("propertyDetails"),
     name: text("name"),
@@ -40,9 +40,18 @@ export async function requestLegalHelp(_prev: LegalRequestState, formData: FormD
 
   const v = parsed.data;
   const supabase = await createClient();
+  const { data: service } = await supabase
+    .from("legal_services")
+    .select("id")
+    .eq("slug", v.serviceSlug)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (!service) {
+    return { status: "error", message: "Please choose a service.", fieldErrors: { serviceSlug: "Choose a service" } };
+  }
   // No .select() afterwards: guests may create a request but not read it back.
   const { error } = await supabase.from("legal_requests").insert({
-    service: v.service,
+    service_id: service.id,
     property_id: v.propertyId ?? null,
     property_details: v.propertyDetails ?? null,
     name: v.name,

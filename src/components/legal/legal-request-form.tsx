@@ -8,11 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input, fieldClasses } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { requestLegalHelp, type LegalRequestState } from "@/lib/legal/actions";
-import { LEGAL_SERVICES, type LegalService } from "@/lib/legal/constants";
 import { cn } from "@/lib/utils";
 
+type ServiceOption = { slug: string; title: string };
+
 type LegalRequestFormProps = {
-  defaultService?: LegalService;
+  /** Services to choose from (published catalogue, in order). */
+  services: ServiceOption[];
+  /** On a service's own page: that service, already chosen. */
+  service?: ServiceOption;
+  defaultService?: string;
   /** When the request is about an OCHWORLD listing. */
   property?: { id: string; title: string; district: string };
   defaultName?: string;
@@ -24,7 +29,14 @@ type LegalRequestFormProps = {
  * server (lib/validations/legal.ts); submitted via onSubmit so React keeps
  * what was typed if the server sends back errors.
  */
-export function LegalRequestForm({ defaultService, property, defaultName, defaultEmail }: LegalRequestFormProps) {
+export function LegalRequestForm({
+  services,
+  service,
+  defaultService,
+  property,
+  defaultName,
+  defaultEmail,
+}: LegalRequestFormProps) {
   const [state, formAction, pending] = useActionState<LegalRequestState, FormData>(requestLegalHelp, {
     status: "idle",
   });
@@ -63,18 +75,28 @@ export function LegalRequestForm({ defaultService, property, defaultName, defaul
 
       {state.status === "error" && <FormAlert state={{ type: "error", message: state.message }} />}
 
-      <FormField id="legal-service" label="What do you need?" error={errors.service}>
-        <Select id="legal-service" name="service" defaultValue={defaultService ?? ""} aria-invalid={!!errors.service} required>
-          <option value="" disabled>
-            Choose a service…
-          </option>
-          {LEGAL_SERVICES.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.title}
+      {service ? (
+        <input type="hidden" name="service" value={service.slug} />
+      ) : (
+        <FormField id="legal-service" label="What do you need?" error={errors.serviceSlug}>
+          <Select
+            id="legal-service"
+            name="service"
+            defaultValue={defaultService ?? ""}
+            aria-invalid={!!errors.serviceSlug}
+            required
+          >
+            <option value="" disabled>
+              Choose a service…
             </option>
-          ))}
-        </Select>
-      </FormField>
+            {services.map((s) => (
+              <option key={s.slug} value={s.slug}>
+                {s.title}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+      )}
 
       {property ? (
         <div className="rounded-md border bg-surface px-4 py-3 text-sm">
@@ -117,7 +139,7 @@ export function LegalRequestForm({ defaultService, property, defaultName, defaul
 
       <Button type="submit" className="w-full" disabled={pending}>
         {pending && <Loader2 className="animate-spin" />}
-        {pending ? "Sending…" : "Request legal help"}
+        {pending ? "Sending…" : service ? `Request ${service.title.toLowerCase()}` : "Request legal help"}
       </Button>
       <p className="text-center text-xs text-muted-foreground">
         Free to ask. You only pay if you accept the lawyer&apos;s quote.

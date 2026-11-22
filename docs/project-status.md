@@ -1,3 +1,5 @@
+> **Current progress is tracked in [roadmap.md](roadmap.md)** (12-phase plan agreed on 22 Nov 2026). The notes below are the history of earlier phases.
+
 # Project status
 
 Tracks completed phases, decisions and open issues. Update at the end of each phase.

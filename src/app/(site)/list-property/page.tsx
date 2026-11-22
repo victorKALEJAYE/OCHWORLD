@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SiteHeader } from "@/components/layout/site-header";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -21,7 +20,6 @@ const steps = [
 export default function ListPropertyPage() {
   return (
     <>
-      <SiteHeader />
       <main className="mx-auto max-w-content px-4 py-16 sm:px-6">
         <div className="max-w-2xl">
           <p className="eyebrow">For agents and landlords</p>

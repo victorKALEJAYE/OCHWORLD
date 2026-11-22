@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { SiteHeader } from "@/components/layout/site-header";
 import { PropertyDetailView } from "@/components/property/property-detail-view";
 import { getViewer } from "@/lib/auth/viewer";
 import { formatPrice } from "@/lib/format";
@@ -38,7 +37,6 @@ export default async function PropertyPage({ params }: Props) {
 
   return (
     <>
-      <SiteHeader />
       <PropertyDetailView
         property={property}
         similar={similar}

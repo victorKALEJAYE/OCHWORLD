@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Building, Home, KeyRound, LandPlot, MapPin } from "lucide-react";
+import { DisplayHeading } from "@/components/brand/display-heading";
 import { HeroSearch } from "@/components/search/hero-search";
 import { Button } from "@/components/ui/button";
 import { districtPhoto, heroPhoto, heroVideo } from "@/config/photos";
@@ -36,11 +37,7 @@ export function HomeHero({ districts }: { districts: DistrictSummary[] }) {
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/45" />
 
       <div className="mx-auto w-full max-w-content px-4 py-16 sm:px-6">
-        <h1 className="max-w-3xl font-display text-[2.75rem] font-extrabold leading-[1.02] tracking-tight sm:text-7xl">
-          Buy. Rent. Invest.
-          <br />
-          In Abuja<span className="text-primary">.</span>
-        </h1>
+        <DisplayHeading lead="Buy. Rent. Invest." accent="In Abuja." size="xl" className="max-w-3xl" />
         <p className="mt-5 max-w-xl text-lg text-white/85">
           Homes, apartments, offices and land across the Federal Capital Territory.
         </p>

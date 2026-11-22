@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { ExploreNav, SourceList } from "@/components/explore/explore-nav";
-import { SiteHeader } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
 import { ATTRACTIONS } from "@/content/explore/attractions";
 
@@ -16,7 +15,6 @@ const KINDS = ["Landmark", "Park and nature", "Market", "Arts and culture"] as c
 export default function AttractionsPage() {
   return (
     <>
-      <SiteHeader />
       <ExploreNav active="attractions" />
       <main className="mx-auto max-w-content px-4 py-12 sm:px-6">
         <p className="eyebrow">Explore Abuja</p>

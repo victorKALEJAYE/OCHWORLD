@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { SiteHeader } from "@/components/layout/site-header";
 import { PropertyGridSkeleton } from "@/components/property/property-card-skeleton";
 import { SearchResults } from "@/components/property/search-results";
 import { FilterBar } from "@/components/search/filter-bar";
@@ -31,7 +30,6 @@ export default async function PropertiesPage({ searchParams }: Props) {
 
   return (
     <>
-      <SiteHeader />
       <main className="mx-auto max-w-content space-y-8 px-4 py-10 sm:px-6">
         <h1 className="text-3xl font-bold sm:text-4xl">{describeSearch(filters, districts)}</h1>
         <FilterBar filters={filters} districts={districts} />

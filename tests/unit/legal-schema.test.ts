@@ -1,10 +1,11 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { legalRequestSchema } from "@/lib/validations/legal";
-import { LEGAL_SERVICES, LEGAL_SERVICE_LABELS } from "@/lib/legal/constants";
+import { LEGACY_SERVICE_LABELS, SUGGESTED_SERVICE } from "@/lib/legal/constants";
+import { LEGAL_ICONS } from "@/lib/legal/icons";
 
 const base = {
-  service: "title_verification",
+  serviceSlug: "property-due-diligence",
   propertyDetails: "Plot 1234, Guzape District",
   name: "Chinedu Eze",
   email: "chinedu@example.com",
@@ -32,12 +33,25 @@ describe("legalRequestSchema", () => {
     assert.equal(legalRequestSchema.safeParse({ ...base, phone: "12345" }).success, false);
   });
 
-  it("rejects unknown services", () => {
-    assert.equal(legalRequestSchema.safeParse({ ...base, service: "land_grab" }).success, false);
+  it("requires a service slug and rejects malformed ones", () => {
+    assert.equal(legalRequestSchema.safeParse({ ...base, serviceSlug: undefined }).success, false);
+    assert.equal(legalRequestSchema.safeParse({ ...base, serviceSlug: "Due Diligence!" }).success, false);
+    assert.equal(legalRequestSchema.safeParse({ ...base, serviceSlug: "../admin" }).success, false);
+  });
+});
+
+describe("legal service helpers", () => {
+  it("has an icon for every name the database allows", () => {
+    const allowed = ["file-search", "file-text", "gavel", "messages", "key", "land", "scale", "shield", "building", "handshake"];
+    assert.deepEqual(Object.keys(LEGAL_ICONS).sort(), [...allowed].sort());
   });
 
-  it("has a label for every service", () => {
-    for (const s of LEGAL_SERVICES) assert.ok(LEGAL_SERVICE_LABELS[s.value]);
-    assert.equal(LEGAL_SERVICES.length, 5);
+  it("suggests the seeded services from listing pages", () => {
+    assert.equal(SUGGESTED_SERVICE.sale, "land-and-title-matters");
+    assert.equal(SUGGESTED_SERVICE.rent, "tenancy-matters");
+  });
+
+  it("still labels requests made before the catalogue existed", () => {
+    assert.equal(Object.keys(LEGACY_SERVICE_LABELS).length, 5);
   });
 });

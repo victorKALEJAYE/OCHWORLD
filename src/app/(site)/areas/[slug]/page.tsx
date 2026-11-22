@@ -8,7 +8,6 @@ import { DistrictRatings } from "@/components/explore/district-ratings";
 import { ExploreNav } from "@/components/explore/explore-nav";
 import { RatingsEditor } from "@/components/explore/ratings-editor";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { SiteHeader } from "@/components/layout/site-header";
 import { PropertyGrid } from "@/components/property/property-grid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,6 @@ export default async function DistrictPage({ params }: Props) {
 
   return (
     <>
-      <SiteHeader />
       <ExploreNav active="districts" />
       <main>
         <section className="dark relative overflow-hidden bg-background text-foreground">

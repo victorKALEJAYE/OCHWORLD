@@ -1,11 +1,13 @@
 import { z } from "zod";
 
-const SERVICES = ["title_verification", "survey_verification", "agreement_review", "transfer_consent", "due_diligence"] as const;
-
 /** Shared by the legal request form and its server action. Mirrors the database checks. */
 export const legalRequestSchema = z
   .object({
-    service: z.enum(SERVICES, { message: "Choose a service" }),
+    /** Slug of a published service in the legal_services catalogue. */
+    serviceSlug: z
+      .string({ required_error: "Choose a service" })
+      .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Choose a service")
+      .max(60),
     propertyId: z.string().uuid().optional(),
     propertyDetails: z.string().trim().max(500, "Keep this under 500 characters").optional(),
     name: z.string().trim().min(2, "Enter your name").max(100),

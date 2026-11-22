@@ -29,6 +29,18 @@ type OrgRole = "owner" | "admin" | "agent";
 type EnquiryStatus = "new" | "responded" | "closed";
 type LegalService = "title_verification" | "survey_verification" | "agreement_review" | "transfer_consent" | "due_diligence";
 type LegalRequestStatus = "new" | "in_progress" | "completed" | "closed";
+/** Icon names allowed by the legal_services.icon check constraint. */
+export type LegalServiceIcon =
+  | "file-search"
+  | "file-text"
+  | "gavel"
+  | "messages"
+  | "key"
+  | "land"
+  | "scale"
+  | "shield"
+  | "building"
+  | "handshake";
 type DistrictRatingCategory =
   | "security"
   | "road_access"
@@ -268,7 +280,8 @@ export type Database = {
       legal_requests: {
         Row: {
           id: string;
-          service: LegalService;
+          service: LegalService | null;
+          service_id: string | null;
           property_id: string | null;
           property_details: string | null;
           name: string;
@@ -282,7 +295,8 @@ export type Database = {
         };
         /** Only these columns are insertable; requester and status are set by the database. */
         Insert: {
-          service: LegalService;
+          service?: LegalService | null;
+          service_id?: string | null;
           property_id?: string | null;
           property_details?: string | null;
           name: string;
@@ -293,6 +307,13 @@ export type Database = {
         /** Platform admins only (RLS + column grant). */
         Update: { status?: LegalRequestStatus };
         Relationships: [
+          {
+            foreignKeyName: "legal_requests_service_id_fkey";
+            columns: ["service_id"];
+            isOneToOne: false;
+            referencedRelation: "legal_services";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "legal_requests_property_id_fkey";
             columns: ["property_id"];
@@ -322,6 +343,45 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      legal_services: {
+        Row: {
+          id: string;
+          slug: string;
+          title: string;
+          icon: LegalServiceIcon;
+          summary: string;
+          description: string;
+          covers: string[];
+          reasons: string[];
+          position: number;
+          is_published: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          slug: string;
+          title: string;
+          icon?: LegalServiceIcon;
+          summary: string;
+          description: string;
+          covers?: string[];
+          reasons?: string[];
+          position?: number;
+          is_published?: boolean;
+        };
+        Update: Partial<{
+          slug: string;
+          title: string;
+          icon: LegalServiceIcon;
+          summary: string;
+          description: string;
+          covers: string[];
+          reasons: string[];
+          position: number;
+          is_published: boolean;
+        }>;
+        Relationships: [];
       };
       saved_properties: {
         Row: { user_id: string; property_id: string; created_at: string };

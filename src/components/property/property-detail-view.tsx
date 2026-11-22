@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SUGGESTED_SERVICE } from "@/lib/legal/constants";
 import { ChevronRight, MapPin, ShieldCheck } from "lucide-react";
 import { EnquiryForm } from "@/components/property/enquiry-form";
 import { OrganizationCard } from "@/components/property/organization-card";
@@ -137,10 +138,9 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
   );
 }
 
-/** Points buyers and renters to the legal services before they pay anything. */
+/** Points buyers and renters to the relevant legal service before they pay anything. */
 function LegalCheckCallout({ slug, listingType }: { slug: string; listingType: "sale" | "rent" }) {
   const isSale = listingType === "sale";
-  const service = isSale ? "title_verification" : "agreement_review";
   return (
     <div className="flex gap-3 rounded-lg border bg-surface p-5">
       <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
@@ -151,8 +151,8 @@ function LegalCheckCallout({ slug, listingType }: { slug: string; listingType: "
             ? "A property lawyer can search AGIS and check the C of O and survey for this property."
             : "A property lawyer can review the tenancy agreement and the landlord's right to let."}
         </p>
-        <Link href={`/legal-services?property=${slug}&service=${service}#request`} className="link inline-block text-sm">
-          {isSale ? "Request a title check" : "Request an agreement review"}
+        <Link href={`/legal-services/${SUGGESTED_SERVICE[listingType]}?property=${slug}#request`} className="link inline-block text-sm">
+          {isSale ? "Request a title check" : "Request a tenancy review"}
         </Link>
       </div>
     </div>

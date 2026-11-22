@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { Membership } from "@/lib/auth/account";
 import type { OrganizationStats } from "@/lib/dashboard/queries";
 import type { EnquirySummary } from "@/lib/enquiries/queries";
-import { LEGAL_SERVICE_LABELS, LEGAL_STATUS_LABELS } from "@/lib/legal/constants";
+import { LEGAL_STATUS_LABELS } from "@/lib/legal/constants";
 import type { LegalRequestSummary } from "@/lib/legal/queries";
 import { formatListedDate } from "@/lib/format";
 import { ORGANIZATION_TYPE_LABELS } from "@/lib/properties/constants";
@@ -248,7 +248,7 @@ export function LegalRequestsPanel({ requests }: { requests: LegalRequestSummary
         {requests.map((r) => (
           <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div className="min-w-0 space-y-0.5">
-              <p className="text-sm font-semibold">{LEGAL_SERVICE_LABELS[r.service]}</p>
+              <p className="text-sm font-semibold">{r.serviceTitle}</p>
               <p className="truncate text-xs text-muted-foreground">
                 {r.property ? (
                   <Link href={`/properties/${r.property.slug}`} className="link">

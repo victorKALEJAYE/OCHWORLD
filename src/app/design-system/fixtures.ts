@@ -41,3 +41,25 @@ export const designReviewProperties: PropertyCardData[] = [
     areaSqm: 450,
   },
 ];
+
+/** Example signed-in user for the header and account menu. */
+export const designReviewAccount = {
+  name: "Adaeze Okafor",
+  email: "adaeze@example.com",
+  initials: "AO",
+  onboarded: true,
+  isPlatformAdmin: false,
+  organizations: [{ id: "example-org", name: "Example Realty", role: "owner" as const }],
+};
+
+export const designReviewLegalServices = [
+  { id: "1", slug: "property-due-diligence", title: "Property Due Diligence", icon: "file-search" as const, summary: "Find out everything about a property, its seller and its papers before you commit any money." },
+  { id: "2", slug: "documentation", title: "Documentation", icon: "file-text" as const, summary: "Have the right contracts and deeds drafted or reviewed, so every deal is properly written down." },
+  { id: "3", slug: "tenancy-matters", title: "Tenancy Matters", icon: "key" as const, summary: "Tenancy agreements, rent disputes and recovering possession, handled properly." },
+];
+
+export const designReviewRatings = {
+  security: { score: 4, note: "Example note shown publicly", updatedAt: "2026-11-01T00:00:00Z" },
+  road_access: { score: 5, updatedAt: "2026-11-01T00:00:00Z" },
+  flood_safety: { score: 3, updatedAt: "2026-11-01T00:00:00Z" },
+};

@@ -1,0 +1,87 @@
+# Applies new database migrations to Supabase automatically.
+#
+# Runs when files in supabase/migrations/ change on the main branch, or by hand
+# (GitHub → Actions → "Database migrations" → Run workflow).
+#
+# Needs three repository secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_ACCESS_TOKEN  Supabase → Account → Access Tokens
+#   SUPABASE_DB_PASSWORD   Supabase → Project Settings → Database
+#   SUPABASE_PROJECT_ID    the project reference, e.g. rtosuaubgdeilywnefla
+#
+# Supabase records every migration it has applied, so each file runs once.
+# To change the database: add a NEW file in supabase/migrations/ (never edit
+# one that has already run), commit and push.
+
+name: Database migrations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/migrations/**"
+      - ".github/workflows/database.yml"
+  workflow_dispatch:
+
+# Never run two migration jobs against the database at the same time.
+concurrency:
+  group: supabase-migrations
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # A fixed version: "latest" makes the action ask GitHub's API for the
+      # newest release, which hits GitHub's rate limit. Bump this occasionally.
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.115.0
+
+      # Copies the secrets into the job, trimming stray spaces or line breaks
+      # that easily slip in when pasting, and checks each one looks right.
+      - name: Check the secrets
+        env:
+          RAW_SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          RAW_SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          RAW_SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+        run: |
+          trim() { local v="$1"; v="${v#"${v%%[![:space:]]*}"}"; v="${v%"${v##*[![:space:]]}"}"; printf '%s' "$v"; }
+          for name in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_ID; do
+            raw="RAW_$name"
+            value="$(trim "${!raw}")"
+            if [ -z "$value" ]; then echo "::error::Repository secret $name is missing or empty"; exit 1; fi
+            echo "::add-mask::$value"
+            declare "$name=$value"
+            echo "$name=$value" >> "$GITHUB_ENV"
+          done
+          if [[ ! "$SUPABASE_ACCESS_TOKEN" =~ ^sbp_[a-zA-Z0-9_]+$ ]]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN doesn't look like an access token. It must start with sbp_ (Supabase → Account → Access Tokens), not sb_secret_ or sb_publishable_, with no quotes or name in front."
+            exit 1
+          fi
+          if [[ ! "$SUPABASE_PROJECT_ID" =~ ^[a-z0-9]{20}$ ]]; then
+            echo "::error::SUPABASE_PROJECT_ID should be the 20-letter project reference, e.g. rtosuaubgdeilywnefla"
+            exit 1
+          fi
+          echo "All three secrets look right."
+
+      - name: Connect to the Supabase project
+        run: supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      # Migrations 1-3 were applied by hand (SQL Editor) before this workflow
+      # existed. This records them as done so they are never run twice.
+      # Harmless when they are already recorded. (Migrations 4 and later are
+      # safe to re-run, so they are left for the CLI to apply.)
+      - name: Record migrations applied by hand
+        run: supabase migration repair --status applied 20261119000001 20261119000002 20261120000003
+
+      - name: Preview what will run
+        run: supabase db push --dry-run
+
+      - name: Apply new migrations
+        run: supabase db push
+
+      - name: Show migration history
+        run: supabase migration list
