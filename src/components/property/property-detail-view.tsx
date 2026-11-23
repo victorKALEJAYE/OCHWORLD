@@ -7,6 +7,7 @@ import { PropertyFacts } from "@/components/property/property-facts";
 import { PropertyGallery } from "@/components/property/property-gallery";
 import { PropertyGrid } from "@/components/property/property-grid";
 import { FavouriteButton } from "@/components/property/favourite-button";
+import { MobileContactBar } from "@/components/property/mobile-contact-bar";
 import { Badge } from "@/components/ui/badge";
 import { formatListedDate, formatPrice } from "@/lib/format";
 import { propertiesHref } from "@/lib/properties/filters";
@@ -28,8 +29,8 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
   const location = [property.address, property.district, "Abuja"].filter(Boolean).join(", ");
 
   return (
-    <main className="mx-auto max-w-content px-4 py-8 sm:px-6">
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
+    <main className="mx-auto max-w-content px-4 pb-24 pt-4 sm:px-6 sm:pt-8 lg:pb-8">
+      <nav aria-label="Breadcrumb" className="mb-4 text-sm text-muted-foreground sm:mb-6">
         <ol className="flex flex-wrap items-center gap-1">
           <li>
             <Link href="/properties" className="hover:text-foreground">
@@ -55,14 +56,14 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
 
       <PropertyGallery images={property.images} title={property.title} />
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px]">
+      <div className="mt-6 grid gap-10 sm:mt-8 lg:grid-cols-[1fr_380px]">
         <div className="min-w-0 space-y-8">
           <header className="space-y-3">
             <div className="flex flex-wrap gap-1.5">
               <Badge variant="solid">{property.listingType === "sale" ? "For sale" : "For rent"}</Badge>
               {property.isFeatured && <Badge variant="gold">Featured</Badge>}
             </div>
-            <h1 className="text-3xl font-bold sm:text-4xl">{property.title}</h1>
+            <h1 className="text-2xl font-bold sm:text-4xl">{property.title}</h1>
             <p className="flex items-center gap-1.5 text-muted-foreground">
               <MapPin className="size-4 shrink-0" aria-hidden="true" />
               {location}
@@ -103,7 +104,7 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-          <div className="space-y-6 rounded-lg border p-6 shadow-card">
+          <div id="contact" className="scroll-mt-20 space-y-6 rounded-lg border p-5 shadow-card sm:p-6">
             <OrganizationCard organization={property.organization} />
             <div className="border-t pt-6">
               <h2 className="mb-4 text-lg font-bold">Contact the agent</h2>
@@ -123,6 +124,8 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
         </aside>
       </div>
 
+      <MobileContactBar price={formatPrice(property.price, property.rentPeriod)} targetId="contact" />
+
       {similar.length > 0 && (
         <section className="mt-16 border-t pt-12">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -131,7 +134,7 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
               View all
             </Link>
           </div>
-          <PropertyGrid properties={similar} favouriteIds={similarFavouriteIds} />
+          <PropertyGrid properties={similar} favouriteIds={similarFavouriteIds} layout="row" />
         </section>
       )}
     </main>

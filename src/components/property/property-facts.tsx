@@ -21,9 +21,11 @@ export function PropertyFacts({ property }: { property: PropertyDetail }) {
   ].filter(Boolean) as { icon: typeof Building; label: string; value: string }[];
 
   return (
-    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-3 lg:grid-cols-5">
+    // Each cell draws its own right and bottom line; the outer box clips the
+    // ones on the edge. Empty cells at the end of a row stay plain white.
+    <dl className="grid grid-cols-2 overflow-hidden rounded-lg border sm:grid-cols-3 lg:grid-cols-5">
       {facts.map(({ icon: Icon, label, value }) => (
-        <div key={label} className="bg-background p-4">
+        <div key={label} className="-mb-px -mr-px border-b border-r p-4">
           <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Icon className="size-3.5" aria-hidden="true" />
             {label}

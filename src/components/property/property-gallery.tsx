@@ -23,7 +23,9 @@ export function PropertyGallery({ images, title }: { images: PropertyImage[]; ti
   const thumbs = rest.slice(0, 4);
 
   return (
-    <div className={cn("grid gap-2 overflow-hidden rounded-lg", thumbs.length > 0 && "md:grid-cols-4 md:grid-rows-2")}>
+    <>
+      <MobileGallery images={images} title={title} />
+      <div className={cn("hidden gap-2 overflow-hidden rounded-lg md:grid", thumbs.length > 0 && "md:grid-cols-4 md:grid-rows-2")}>
       <div className={cn("relative aspect-[4/3] bg-muted", thumbs.length > 0 && "md:col-span-2 md:row-span-2 md:aspect-auto")}>
         <Image src={main.url} alt={main.alt || title} fill priority sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
       </div>
@@ -32,6 +34,40 @@ export function PropertyGallery({ images, title }: { images: PropertyImage[]; ti
           <Image src={img.url} alt={img.alt || `${title}, photo ${i + 2}`} fill sizes="25vw" className="object-cover" />
         </div>
       ))}
+      </div>
+    </>
+  );
+}
+
+/**
+ * Phones: every photo, full width, swiped sideways one at a time (edge to
+ * edge, like property apps), with a photo count.
+ */
+function MobileGallery({ images, title }: { images: PropertyImage[]; title: string }) {
+  return (
+    <div className="relative -mx-4 sm:-mx-6 md:hidden">
+      <ul
+        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        aria-label={`${images.length} photos of ${title}`}
+      >
+        {images.map((img, i) => (
+          <li key={img.url} className="relative aspect-[4/3] w-full shrink-0 snap-center bg-muted">
+            <Image
+              src={img.url}
+              alt={img.alt || (i === 0 ? title : `${title}, photo ${i + 1}`)}
+              fill
+              priority={i === 0}
+              sizes="100vw"
+              className="object-cover"
+            />
+          </li>
+        ))}
+      </ul>
+      {images.length > 1 && (
+        <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/70 px-2.5 py-1 text-xs font-medium text-white">
+          {images.length} photos · swipe
+        </span>
+      )}
     </div>
   );
 }

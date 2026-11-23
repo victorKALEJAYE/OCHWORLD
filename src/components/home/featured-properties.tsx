@@ -43,7 +43,7 @@ export function FeaturedPropertiesView({
   return (
     <FeaturedShell>
       {properties.length > 0 ? (
-        <PropertyGrid properties={properties} favouriteIds={favouriteIds} />
+        <PropertyGrid properties={properties} favouriteIds={favouriteIds} layout="row" />
       ) : (
         <EmptyState
           icon={Building2}

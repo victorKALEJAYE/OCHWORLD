@@ -43,7 +43,7 @@ export function SectionHeader({
   linkLabel?: string;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 sm:mb-8">
       <div>
         <h2 className="text-2xl font-bold sm:text-3xl">{title}</h2>
         {description && <p className="mt-1 text-muted-foreground">{description}</p>}
@@ -66,20 +66,20 @@ const categories = [
 
 export function BrowseCategories() {
   return (
-    <section className="mx-auto max-w-content px-4 py-16 sm:px-6">
+    <section className="mx-auto max-w-content px-4 py-12 sm:px-6 sm:py-16">
       <SectionHeader title="Browse by category" />
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {categories.map(({ icon: Icon, title, text, href }) => (
           <li key={title}>
             <Link
               href={href}
-              className="group flex h-full flex-col rounded-lg border bg-card p-5 shadow-card transition-colors hover:border-foreground"
+              className="group flex h-full flex-col rounded-lg border bg-card p-4 shadow-card transition-colors hover:border-foreground sm:p-5"
             >
               <Icon className="size-6 text-primary" aria-hidden="true" />
-              <span className="mt-6 font-display text-lg font-bold">{title}</span>
-              <span className="mt-1 text-sm text-muted-foreground">{text}</span>
+              <span className="mt-4 font-display text-base font-bold sm:mt-6 sm:text-lg">{title}</span>
+              <span className="mt-1 text-xs text-muted-foreground sm:text-sm">{text}</span>
               <ArrowRight
-                className="mt-4 size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground"
+                className="mt-4 hidden size-4 sm:block text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-foreground"
                 aria-hidden="true"
               />
             </Link>

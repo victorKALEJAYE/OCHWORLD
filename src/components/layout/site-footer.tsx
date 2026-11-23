@@ -26,8 +26,8 @@ const columns = [
 export function SiteFooter() {
   return (
     <footer className="border-t bg-surface pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto grid max-w-content gap-10 px-4 py-12 sm:px-6 md:grid-cols-[2fr_1fr_1fr]">
-        <div className="space-y-3">
+      <div className="mx-auto grid max-w-content grid-cols-2 gap-x-6 gap-y-8 px-4 py-10 sm:px-6 sm:py-12 md:grid-cols-[2fr_1fr_1fr] md:gap-10">
+        <div className="col-span-2 space-y-3 md:col-span-1">
           <Logo />
           <p className="max-w-xs text-sm text-muted-foreground">{siteConfig.description}</p>
         </div>
