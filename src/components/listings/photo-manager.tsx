@@ -137,7 +137,7 @@ export function PhotoManager({ organizationId, propertyId, photos }: PhotoManage
                 <Image src={photo.url} alt={`Photo ${index + 1}`} fill sizes="(min-width: 1024px) 25vw, 50vw" className="object-cover" />
               </div>
               {index === 0 && (
-                <Badge variant="gold" className="absolute left-2 top-2">
+                <Badge variant="brand" className="absolute left-2 top-2">
                   Cover
                 </Badge>
               )}

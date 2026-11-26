@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 type DisplayHeadingProps = {
   /** First line. */
   lead: string;
-  /** Second line. A trailing full stop is drawn in gold. */
+  /** Second line. A trailing full stop is drawn in the brand teal. */
   accent: string;
   as?: "h1" | "h2";
   size?: "lg" | "xl";

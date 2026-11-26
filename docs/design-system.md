@@ -6,28 +6,30 @@ http://localhost:3000/design-system). It is hidden in production unless
 
 ## 1. Brand colours
 
-| Token | Value | Source |
+Changed from gold to teal on 26 November 2026. The gold originals of the logo
+files are kept in `docs/brand/`.
+
+| Token | Value | Use |
 |---|---|---|
-| `brand-gold` / `primary` | `#C38C25` (HSL 39 68% 45%) | Measured from the original logo (gold mark on black, median of the gold pixels). |
-| `brand-black` | `#000000` | Background of the original logo. |
+| `brand-teal` / `primary` | `#0F766E` (HSL 175 77% 26%) | Logo, primary buttons, links, accents on white |
+| `brand-teal-light` / `primary` inside `.dark` | `#2DD4BF` (HSL 172 66% 50%) | Accents and links on dark photo heroes |
+| `brand-black` | `#000000` | Text and the tint over photos |
 
 Rules:
 
-- **No other golds.** Lighter or softer gold is made with opacity (`bg-primary/10`, `border-primary/15`), never a new hex value.
+- **No other teals.** Lighter or softer teal is made with opacity (`bg-primary/10`, `border-primary/15`), never a new hex value.
 - **No gradients** on surfaces, text or buttons. The logo itself is a flat colour.
-- `public/ochworld-mark.png` and `public/ochworld-logo.png` were recoloured to exactly `#C38C25` (the shapes are unchanged). Replace them with the designer's SVG when available.
-- The measurement came from a compressed JPG. If the designer supplies an official hex value, change it in **two places**: `tailwind.config.ts` (`brand.gold`) and `globals.css` (`--primary`, `--ring`).
+- `public/ochworld-mark.png` and `public/ochworld-logo.png` are flat `#0F766E` (the shapes are unchanged). Replace them with the designer's SVG when available.
+- To change the colour again, edit **two places**: `tailwind.config.ts` (`brand.teal`, `brand.teal-light`) and `globals.css` (`--primary`, `--ring` in `:root` and `.dark`), then recolour the two logo files.
 
 ### Contrast (WCAG AA needs 4.5:1 for text)
 
 | Pair | Ratio | Allowed use |
 |---|---|---|
-| Gold on black | 7.1:1 | Text, links, icons |
-| Black on gold | 7.1:1 | Primary button label |
-| Gold on white | 3.0:1 | Fills, icons, underlines, logo. **Not body text or links.** |
-
-That is why `.link` renders as foreground text with a gold underline on light
-pages, and as gold text on dark pages.
+| White on teal | 5.5:1 | Primary button label |
+| Teal on white | 5.5:1 | Text, links, icons |
+| Light teal on black | 11.3:1 | Links and accents on dark heroes |
+| Black on light teal | 11.3:1 | Primary button label on dark heroes |
 
 ## 2. Themes and the "one dominant colour" rule
 
@@ -38,9 +40,9 @@ One light theme everywhere: white header, white or light-grey pages. Black
 appears only behind photos (homepage hero, district pages, sign-in photo
 panel), always as an even tint, never a gradient.
 
-| Page | Dominant | Gold used for |
+| Page | Dominant | Teal used for |
 |---|---|---|
-| Homepage | Photo hero (tinted), white sections below | Search button, gold full stop, "Featured" badges |
+| Homepage | Photo hero (tinted), white sections below | Search button, teal full stop, "Featured" badges |
 | Search & listings | White | Active filters, primary action |
 | Property detail | White | Enquire button |
 | Explore Abuja | White; photo hero on district pages | Rating bars, active tab |
@@ -56,7 +58,7 @@ and `success`.
 
 - **Montserrat** (600–800) for headings and prices: geometric, closest to the logo lettering.
 - **Inter** for everything else.
-- **Display headline** (`DisplayHeading`): Montserrat ExtraBold, two short lines, tight leading, gold full stop only, e.g. "Buy. Rent. Invest. / In Abuja.". The one headline style for heroes and page intros (homepage, Explore Abuja, Legal services, sign-in panel). Once per page. (Phase 5 replaced the earlier light uppercase/italic style so every page matches the homepage.)
+- **Display headline** (`DisplayHeading`): Montserrat ExtraBold, two short lines, tight leading, teal full stop only, e.g. "Buy. Rent. Invest. / In Abuja.". The one headline style for heroes and page intros (homepage, Explore Abuja, Legal services, sign-in panel). Once per page. (Phase 5 replaced the earlier light uppercase/italic style so every page matches the homepage.)
 - Scale: display 44–96px, H1 36px, H2 24px, H3 18px, body 16px, small 14px, eyebrow 12px uppercase.
 
 ## 4. Shape, spacing, elevation
@@ -69,16 +71,16 @@ and `success`.
 
 | Component | File | Notes |
 |---|---|---|
-| Button | `components/ui/button.tsx` | `primary` (gold, one per view), `secondary`, `outline`, `ghost`, `destructive`, `link` |
+| Button | `components/ui/button.tsx` | `primary` (teal, one per view), `secondary`, `outline`, `ghost`, `destructive`, `link` |
 | Input, Select | `components/ui/input.tsx`, `select.tsx` | Select is a styled native `<select>` (accessible, works without JS, uses the phone's picker) |
 | Checkbox, Label, Separator | `components/ui/*` | Radix primitives |
-| Badge | `components/ui/badge.tsx` | `solid` for listing type, `gold` for Featured |
+| Badge | `components/ui/badge.tsx` | `solid` for listing type, `brand` for Featured |
 | Card | `components/ui/card.tsx` | `CardTitle` is `h3` by default; pass `as="h1"` for page-level cards |
 | Site header | `components/layout/site-header.tsx` | Rendered once in the `(site)` and dashboard layouts; guests see Sign in, signed-in users the initials avatar + account menu (`account-menu.tsx`) |
 | Property card | `components/property/property-card.tsx` | Takes a `PropertyCardData` view-model; save button passed in as a slot |
 | Skeletons | `components/ui/skeleton.tsx`, `property/property-card-skeleton.tsx` | Same footprint as the real card |
 | Empty / error states | `components/feedback/*` | Always offer a next step; 404 and error pages keep a header |
-| Legal service card | `components/legal/legal-service-card.tsx` | Black icon tile, gold icon; carousel in `legal-services-carousel.tsx` |
+| Legal service card | `components/legal/legal-service-card.tsx` | Teal icon tile, white icon; carousel in `legal-services-carousel.tsx` |
 | Location rating | `components/explore/district-ratings.tsx` | 1–5 bars per category, "Not yet rated" when empty |
 | Sliding row | `components/legal/legal-services-carousel.tsx` | Legal services on the homepage, like an app banner slider: one step every 4.5 s, next item peeking, position dots (current = pill), loops; swipe on phones; holds while hovered and for 8 s after a swipe or dot tap; no movement for reduced motion |
 

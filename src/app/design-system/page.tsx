@@ -39,21 +39,22 @@ export default function DesignSystemPage() {
           <h1 className="mt-3 text-4xl font-bold sm:text-5xl">Design system</h1>
           <p className="mt-4 max-w-2xl text-muted-foreground">
             Two brand colours taken from the logo, pure-grey neutrals, flat surfaces. Each page has one dominant
-            colour; gold is the accent.
+            colour; teal is the accent.
           </p>
         </div>
       </div>
 
       <div className="mx-auto max-w-content space-y-20 px-4 pt-16 sm:px-6">
-        <Section title="Brand colours" note="Measured from the original logo. No other golds: tints use opacity.">
+        <Section title="Brand colours" note="Teal is the only brand colour. No other teals: tints use opacity.">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Swatch className="bg-brand-gold text-black" name="Gold" hex="#C38C25" usage="Logo, primary button, accents, active states" />
-            <Swatch className="bg-brand-black text-white" name="Black" hex="#000000" usage="Dark pages, hero, text on gold" />
+            <Swatch className="bg-brand-teal text-white" name="Teal" hex="#0F766E" usage="Logo, primary button, accents, active states" />
+            <Swatch className="bg-brand-teal-light text-black" name="Light teal" hex="#2DD4BF" usage="Accents and links on dark photo heroes" />
+            <Swatch className="bg-brand-black text-white" name="Black" hex="#000000" usage="Text, tints over photos" />
           </div>
           <div className="mt-6 grid gap-3 text-sm sm:grid-cols-3">
-            <Contrast pair="Gold on black" ratio="7.1 : 1" ok text="Gold text and links allowed" />
-            <Contrast pair="Black on gold" ratio="7.1 : 1" ok text="Primary button label" />
-            <Contrast pair="Gold on white" ratio="3.0 : 1" text="Fills and icons only, never body text" />
+            <Contrast pair="White on teal" ratio="5.5 : 1" ok text="Primary button label" />
+            <Contrast pair="Teal on white" ratio="5.5 : 1" ok text="Teal text and links allowed" />
+            <Contrast pair="Light teal on black" ratio="11.3 : 1" ok text="Links and accents on dark heroes" />
           </div>
         </Section>
 
@@ -73,7 +74,7 @@ export default function DesignSystemPage() {
                 <tr>
                   <th className="px-4 py-3 font-semibold">Page</th>
                   <th className="px-4 py-3 font-semibold">Dominant</th>
-                  <th className="px-4 py-3 font-semibold">Gold used for</th>
+                  <th className="px-4 py-3 font-semibold">Teal used for</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -118,7 +119,7 @@ export default function DesignSystemPage() {
           </div>
         </Section>
 
-        <Section title="Buttons" note="One gold button per view, for the main action.">
+        <Section title="Buttons" note="One teal button per view, for the main action.">
           <ThemePair>
             <div className="flex flex-wrap items-center gap-3">
               <Button>
@@ -164,7 +165,7 @@ export default function DesignSystemPage() {
           </ThemePair>
         </Section>
 
-        <Section title="Search bar" note="The homepage hero pattern: black dominant, one gold action.">
+        <Section title="Search bar" note="The homepage hero pattern: white search box, one teal action.">
           <div className="dark rounded-lg border bg-background p-6 text-foreground sm:p-8">
             <div className="mb-5 inline-flex rounded-md border p-1" role="group" aria-label="Listing type">
               <Button size="sm" className="h-8">
@@ -208,7 +209,7 @@ export default function DesignSystemPage() {
           <div className="flex flex-wrap gap-2">
             <Badge variant="solid">For sale</Badge>
             <Badge variant="solid">For rent</Badge>
-            <Badge variant="gold">Featured</Badge>
+            <Badge variant="brand">Featured</Badge>
             <Badge variant="neutral">Apartment</Badge>
             <Badge variant="outline">Furnished</Badge>
             <Badge variant="success">Available</Badge>
@@ -227,7 +228,7 @@ export default function DesignSystemPage() {
           </div>
         </Section>
 
-        <Section title="Legal service cards" note="Black icon tile with gold icon. Homepage carousel and legal pages.">
+        <Section title="Legal service cards" note="Teal icon tile with white icon. Homepage carousel and legal pages.">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {designReviewLegalServices.map((s) => (
               <LegalServiceCard key={s.slug} service={s} />
@@ -287,7 +288,7 @@ export default function DesignSystemPage() {
 }
 
 const pagePlan: [string, string, string][] = [
-  ["Homepage", "Photo hero (tinted), white sections below", "Search button, gold full stop, “Featured” badges"],
+  ["Homepage", "Photo hero (tinted), white sections below", "Search button, teal full stop, “Featured” badges"],
   ["Search & listings", "White", "Active filters, primary action"],
   ["Property detail", "White", "Enquire button"],
   ["Explore Abuja", "White; photo hero on district pages", "Rating bars, active tab"],

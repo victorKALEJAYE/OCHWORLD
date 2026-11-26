@@ -20,7 +20,7 @@ type BrandLoaderProps = {
 const nameSizes = { sm: "text-sm", md: "text-base", lg: "text-lg" } as const;
 
 /**
- * The only loading animation in the product: the logo with a thin gold arc
+ * The only loading animation in the product: the logo with a thin teal arc
  * turning around it, optionally with the wordmark underneath. Used for the
  * first visit and page navigation. Data inside a page uses skeletons instead
  * (see components/ui/skeleton).
@@ -43,7 +43,7 @@ export function BrandLoader({ size = "md", label = "Loading", withName = false, 
       {withName && (
         <span
           aria-hidden="true"
-          className={cn("font-display font-bold tracking-[0.2em] text-brand-gold", nameSizes[size])}
+          className={cn("font-display font-bold tracking-[0.2em] text-brand-teal", nameSizes[size])}
         >
           {siteConfig.name}
         </span>

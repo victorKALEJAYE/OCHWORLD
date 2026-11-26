@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Variants follow the brand rule "one dominant colour, the other as accent":
- * - primary: gold fill, black text. One per view, for the main action.
+ * - primary: teal fill, white text. One per view, for the main action.
  * - secondary: the page's foreground colour as a fill (black on light, white on dark).
  * - outline / ghost: everything else.
  */

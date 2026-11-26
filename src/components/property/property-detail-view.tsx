@@ -61,7 +61,7 @@ export function PropertyDetailView({ property, similar, viewer, saved, similarFa
           <header className="space-y-3">
             <div className="flex flex-wrap gap-1.5">
               <Badge variant="solid">{property.listingType === "sale" ? "For sale" : "For rent"}</Badge>
-              {property.isFeatured && <Badge variant="gold">Featured</Badge>}
+              {property.isFeatured && <Badge variant="brand">Featured</Badge>}
             </div>
             <h1 className="text-2xl font-bold sm:text-4xl">{property.title}</h1>
             <p className="flex items-center gap-1.5 text-muted-foreground">

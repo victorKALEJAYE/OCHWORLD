@@ -5,16 +5,16 @@
 /*
  * Theme variables (HSL channels, used as hsl(var(--x))).
  *
- * Brand gold #C38C25 = 39 68% 45%, measured from the original logo.
- * Brand black #000000.
- * Neutrals are pure greys (no warm tint) so the gold stays the only colour.
+ * Brand teal #0F766E = 175 77% 26% (logo, buttons, accents) on white.
+ * Light teal #2DD4BF = 172 66% 50% replaces it on dark surfaces (photo heroes).
+ * Neutrals are pure greys so teal stays the only colour.
  *
- * Light is the default. Wrap a page or section in `.dark` for the black theme.
+ * Light is the default. Wrap a page or section in `.dark` for the dark theme.
  * Contrast rules (WCAG AA):
- *   gold on black  7.1:1  -> gold text and links are fine on dark surfaces
- *   gold on white  3.0:1  -> on light surfaces gold is for fills, icons and accents,
- *                            never body text; links use foreground + gold underline
- *   black on gold  7.1:1  -> primary buttons use black text
+ *   white on teal #0F766E  5.5:1 -> primary buttons use white text
+ *   teal #0F766E on white  5.5:1 -> teal text and links are fine on light pages
+ *   light teal on black    11:1  -> teal text and links on dark surfaces
+ *   black on light teal    11:1  -> primary buttons on dark surfaces use black text
  */
 @layer base {
   :root {
@@ -27,9 +27,9 @@
     --muted-foreground: 0 0% 40%;
     --border: 0 0% 90%;
     --input: 0 0% 84%;
-    --primary: 39 68% 45%;
-    --primary-foreground: 0 0% 0%;
-    --ring: 39 68% 45%;
+    --primary: 175 77% 26%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 175 77% 26%;
     --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 100%;
     --success: 142 64% 27%;
@@ -47,6 +47,9 @@
     --muted-foreground: 0 0% 64%;
     --border: 0 0% 16%;
     --input: 0 0% 24%;
+    --primary: 172 66% 50%;
+    --primary-foreground: 0 0% 0%;
+    --ring: 172 66% 50%;
     --destructive: 0 84% 66%;
     --destructive-foreground: 0 0% 0%;
     --success: 142 60% 55%;

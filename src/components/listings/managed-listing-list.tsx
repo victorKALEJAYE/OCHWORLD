@@ -46,7 +46,7 @@ export function ManagedListingList({
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={STATUS_BADGE[l.status]}>{LISTING_STATUS_LABELS[l.status]}</Badge>
-                {l.isFeatured && <Badge variant="gold">Featured</Badge>}
+                {l.isFeatured && <Badge variant="brand">Featured</Badge>}
                 {!l.imageUrl && <span className="text-xs text-muted-foreground">No photos</span>}
               </div>
               <Link href={`/dashboard/listings/${l.id}/edit`} className="line-clamp-1 font-semibold hover:underline">

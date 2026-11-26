@@ -143,7 +143,7 @@ export function EnquiryList({
             {manage ? (
               <EnquiryStatusSelect enquiryId={e.id} status={e.status} />
             ) : (
-              <Badge variant={e.status === "new" ? "gold" : "neutral"}>{STATUS_LABELS[e.status]}</Badge>
+              <Badge variant={e.status === "new" ? "brand" : "neutral"}>{STATUS_LABELS[e.status]}</Badge>
             )}
           </div>
           {showSender && e.property && (
@@ -260,7 +260,7 @@ export function LegalRequestsPanel({ requests }: { requests: LegalRequestSummary
                 {" · "}Sent {legalDate.format(new Date(r.createdAt))}
               </p>
             </div>
-            <Badge variant={r.status === "completed" ? "success" : r.status === "new" ? "gold" : "neutral"}>
+            <Badge variant={r.status === "completed" ? "success" : r.status === "new" ? "brand" : "neutral"}>
               {LEGAL_STATUS_LABELS[r.status]}
             </Badge>
           </li>

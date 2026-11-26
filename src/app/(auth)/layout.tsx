@@ -4,7 +4,7 @@ import { Logo } from "@/components/brand/logo";
 
 /**
  * Sign-in, sign-up, onboarding and invitation pages. Same look as the rest of
- * the site: white header, light page, white form card, gold for the main
+ * the site: white header, light page, white form card, teal for the main
  * button. On large screens a dark photo panel echoes the homepage hero.
  */
 export default function AuthLayout({ children }: { children: React.ReactNode }) {

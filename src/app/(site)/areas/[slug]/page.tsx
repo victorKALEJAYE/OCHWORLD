@@ -76,7 +76,7 @@ export default async function DistrictPage({ params }: Props) {
             </nav>
             <h1 className="mt-8 font-display text-4xl font-bold sm:text-5xl">{district.name}</h1>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              {profile && <Badge variant="gold">{profile.phase}</Badge>}
+              {profile && <Badge variant="brand">{profile.phase}</Badge>}
               <Badge variant="outline" className="border-white/40 text-white">
                 {district.listingCount > 0 ? pluralize(district.listingCount, "property", "properties") + " available" : "No listings yet"}
               </Badge>

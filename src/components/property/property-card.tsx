@@ -46,7 +46,7 @@ export function PropertyCard({ property, saveAction, className, priority }: Prop
 
         <div className="absolute left-3 top-3 flex gap-1.5">
           <Badge variant="solid">{listingType === "sale" ? "For sale" : "For rent"}</Badge>
-          {isFeatured && <Badge variant="gold">Featured</Badge>}
+          {isFeatured && <Badge variant="brand">Featured</Badge>}
         </div>
 
         {saveAction && <div className="absolute right-3 top-3 z-10">{saveAction}</div>}

@@ -4,7 +4,7 @@ import animate from "tailwindcss-animate";
 /**
  * OCHWORLD design tokens.
  *
- * Brand colours are measured from the original logo artwork (gold mark on black)
+ * Brand colours are measured from the original logo artwork (the mark, recoloured teal in Nov 2026; gold originals in docs/brand)
  * and must not be extended with extra shades. Tints are made with opacity
  * (e.g. `bg-primary/10`), never with new hex values. See docs/design-system.md.
  *
@@ -30,7 +30,8 @@ const config: Config = {
       },
       colors: {
         brand: {
-          gold: "#C38C25",
+          teal: "#0F766E",
+          "teal-light": "#2DD4BF",
           black: "#000000",
         },
         border: "hsl(var(--border))",

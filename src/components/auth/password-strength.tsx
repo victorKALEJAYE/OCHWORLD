@@ -2,7 +2,7 @@ import { passwordStrength } from "@/lib/validations/auth";
 import { cn } from "@/lib/utils";
 
 const labels = ["Too weak", "Weak", "Fair", "Good", "Strong"];
-// Weak = destructive, fair/good = brand gold, strong = success. No extra colours.
+// Weak = destructive, fair/good = brand teal, strong = success. No extra colours.
 const colors = ["bg-destructive", "bg-destructive", "bg-primary", "bg-primary", "bg-success"];
 
 export function PasswordStrength({ password }: { password: string }) {

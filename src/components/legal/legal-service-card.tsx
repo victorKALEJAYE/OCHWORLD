@@ -34,7 +34,7 @@ export function LegalServiceCard({
         className
       )}
     >
-      <span className="grid size-12 place-items-center rounded-lg bg-foreground text-primary">
+      <span className="grid size-12 place-items-center rounded-lg bg-primary text-primary-foreground">
         <LegalIcon name={service.icon} className="size-6" />
       </span>
       <Title>{service.title}</Title>
@@ -68,7 +68,7 @@ function PhotoCard({ service, className }: { service: LegalServiceSummary; class
       </div>
       <div className="flex flex-1 flex-col px-5 pb-5">
         {/* Icon tile overlaps the photo's bottom edge. */}
-        <span className="relative -mt-6 grid size-12 place-items-center rounded-lg bg-foreground text-primary ring-4 ring-card">
+        <span className="relative -mt-6 grid size-12 place-items-center rounded-lg bg-primary text-primary-foreground ring-4 ring-card">
           <LegalIcon name={service.icon} className="size-6" />
         </span>
         <Title className="mt-4">{service.title}</Title>
